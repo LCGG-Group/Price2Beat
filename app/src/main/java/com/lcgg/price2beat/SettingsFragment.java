@@ -16,6 +16,8 @@ import android.os.Environment;
 import android.util.Log;
 import android.support.v7.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -38,6 +40,7 @@ import java.util.Calendar;
 public class SettingsFragment extends Fragment {
 
     public final static int QRcodeWidth = 500 ;
+    private FirebaseAuth auth;
     private ImageView iv;
     Bitmap bitmap ;
 
@@ -77,6 +80,7 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        auth = FirebaseAuth.getInstance();
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -91,8 +95,10 @@ public class SettingsFragment extends Fragment {
 
         iv = view.findViewById(R.id.iv);
 
+        FirebaseUser user = auth.getCurrentUser();
+
         try {
-            bitmap = TextToImageEncode("Sample");
+            bitmap = TextToImageEncode(user.getUid().toString());
             iv.setImageBitmap(bitmap);
         } catch (WriterException e) {
             e.printStackTrace();
