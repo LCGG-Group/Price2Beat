@@ -31,7 +31,7 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_register);
 
         inputEmail = (EditText)findViewById(R.id.email);
         inputPasword = (EditText)findViewById(R.id.password);

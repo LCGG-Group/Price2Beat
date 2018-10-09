@@ -30,7 +30,7 @@ public class ForgotPasswordActivity extends AppCompatActivity implements OnClick
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_forgot);
 
         activity_forgot = (LinearLayout) findViewById(R.id.activity_forgot);
 
