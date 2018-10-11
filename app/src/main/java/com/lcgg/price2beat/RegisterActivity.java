@@ -33,12 +33,12 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        inputEmail = (EditText)findViewById(R.id.email);
-        inputPasword = (EditText)findViewById(R.id.password);
+        inputEmail = (EditText)findViewById(R.id.register_email);
+        inputPasword = (EditText)findViewById(R.id.register_password);
 
-        txtForgot = (TextView) findViewById(R.id.email_forgotpassword);
-        btnLogin = (Button)findViewById(R.id.email_sign_in_button);
-        btnRegister = (Button)findViewById(R.id.email_register_button);
+        txtForgot = (TextView) findViewById(R.id.register_forgotpassword);
+        btnLogin = (Button)findViewById(R.id.register_sign_in_button);
+        btnRegister = (Button)findViewById(R.id.register_register_button);
 
         activity_register = (LinearLayout) findViewById(R.id.activity_register);
 
@@ -54,16 +54,16 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
     public void onClick(View v) {
 
         //Reset Password
-        if(v.getId() == R.id.email_forgotpassword){
+        if(v.getId() == R.id.register_forgotpassword){
             this.startActivity(new Intent (RegisterActivity.this, ForgotPasswordActivity.class));
             finish();
         }
         //Log in
-        if(v.getId() == R.id.email_sign_in_button){
+        if(v.getId() == R.id.register_sign_in_button){
             this.startActivity(new Intent (RegisterActivity.this, LoginActivity.class));
             finish();
         }
-        else if(v.getId() == R.id.email_register_button){
+        else if(v.getId() == R.id.register_register_button){
             signUpUser(inputEmail.getText().toString(), inputPasword.getText().toString());
         }
     }

@@ -31,6 +31,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookSdk;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -93,6 +95,10 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         else if(v.getId() == R.id.email_sign_in_button){
             loginUser(inputEmail.getText().toString(), inputPasword.getText().toString());
         }
+    }
+
+    public void facebookLogin(View v) {
+        startActivity(new Intent(LoginActivity.this, FacebookLoginActivity.class));
     }
 
     private void loginUser(String email, final String password) {

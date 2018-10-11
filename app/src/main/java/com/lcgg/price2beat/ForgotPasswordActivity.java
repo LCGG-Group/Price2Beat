@@ -34,7 +34,7 @@ public class ForgotPasswordActivity extends AppCompatActivity implements OnClick
 
         activity_forgot = (LinearLayout) findViewById(R.id.activity_forgot);
 
-        inputEmail = (EditText)findViewById(R.id.email);
+        inputEmail = (EditText)findViewById(R.id.forgot_email);
 
         btnReset = (Button)findViewById(R.id.reset_button);
         btnReset.setOnClickListener(this);
@@ -44,10 +44,7 @@ public class ForgotPasswordActivity extends AppCompatActivity implements OnClick
 
     @Override
     public void onClick(View v) {
-
-        if(v.getId() == R.id.reset_button){
-            resetPassword(inputEmail.getText().toString());
-        }
+        resetPassword(inputEmail.getText().toString());
     }
 
     private void resetPassword(String email) {

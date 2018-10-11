@@ -22,6 +22,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="@string/facebook_application_secret" />
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_application_id"
+            tools:replace="android:value" />
+        <meta-data
+            android:name="com.facebook.sdk.AutoLogAppEventEnabled"
+            android:value="false" />
+
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login">
