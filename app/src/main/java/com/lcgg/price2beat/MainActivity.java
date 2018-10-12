@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -23,31 +24,25 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            Fragment fragment;
+            Fragment fragment = null;
+
+            FragmentManager transaction = getSupportFragmentManager();
 
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    //mTextMessage.setText("Home");
                     fragment = new HomeFragment();
-                    loadFragment(fragment);
-                    return true;
+                    break;
                 case R.id.navigation_store:
-                    //mTextMessage.setText("Store");
                     fragment = new StoreFragment();
-                    loadFragment(fragment);
-                    return true;
+                    break;
                 case R.id.navigation_notifications:
-                    //mTextMessage.setText("Notifications");
                     fragment = new NotificationFragment();
-                    loadFragment(fragment);
-                    return true;
+                    break;
                 case R.id.navigation_settings:
-                    //mTextMessage.setText("Settings");
                     fragment = new SettingsFragment();
-                    loadFragment(fragment);
-                    return true;
+                    break;
             }
-            return false;
+            return loadFragment(fragment);
         }
     };
 
@@ -66,12 +61,15 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
-    private void loadFragment(Fragment fragment) {
+    private boolean loadFragment(Fragment fragment) {
         // load fragment
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame_container, fragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+        if(fragment != null){
+            FragmentManager transaction = getSupportFragmentManager();
+            transaction.beginTransaction()
+                    .replace(R.id.frame_container, fragment)
+                    .commit();
+            return true;
+        }
+        return false;
     }
-
 }

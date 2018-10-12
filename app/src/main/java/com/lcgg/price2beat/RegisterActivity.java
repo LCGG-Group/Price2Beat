@@ -1,5 +1,6 @@
 package com.lcgg.price2beat;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -55,12 +56,12 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
 
         //Reset Password
         if(v.getId() == R.id.register_forgotpassword){
-            this.startActivity(new Intent (RegisterActivity.this, ForgotPasswordActivity.class));
+            startActivity(new Intent (RegisterActivity.this, ForgotPasswordActivity.class));
             finish();
         }
         //Log in
         if(v.getId() == R.id.register_sign_in_button){
-            this.startActivity(new Intent (RegisterActivity.this, LoginActivity.class));
+            startActivity(new Intent (RegisterActivity.this, LoginActivity.class));
             finish();
         }
         else if(v.getId() == R.id.register_register_button){

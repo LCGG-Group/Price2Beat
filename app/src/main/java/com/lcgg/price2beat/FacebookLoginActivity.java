@@ -120,6 +120,9 @@ public class FacebookLoginActivity extends AppCompatActivity implements OnClickL
                     if(!task.isSuccessful()){
                         Toast.makeText(FacebookLoginActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
                     }
+                    else{
+                        Toast.makeText(FacebookLoginActivity.this, "Authentication Success", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
     }

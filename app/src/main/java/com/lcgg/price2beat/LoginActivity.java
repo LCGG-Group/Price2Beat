@@ -75,7 +75,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         auth = FirebaseAuth.getInstance();
 
         if(auth.getCurrentUser() != null)
-            this.startActivity(new Intent (LoginActivity.this, MainActivity.class));
+            LoginActivity.this.startActivity(new Intent (LoginActivity.this, MainActivity.class));
 
     }
 
@@ -84,13 +84,13 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
 
         //Reset Password
         if(v.getId() == R.id.email_forgotpassword){
-            this.startActivity(new Intent (LoginActivity.this, ForgotPasswordActivity.class));
-            finish();
+            LoginActivity.this.startActivity(new Intent (LoginActivity.this, ForgotPasswordActivity.class));
+            //finish();
         }
         //Register
         if(v.getId() == R.id.email_register_button){
-            this.startActivity(new Intent (LoginActivity.this, RegisterActivity.class));
-            finish();
+            LoginActivity.this.startActivity(new Intent (LoginActivity.this, RegisterActivity.class));
+            //finish();
         }
         else if(v.getId() == R.id.email_sign_in_button){
             loginUser(inputEmail.getText().toString(), inputPasword.getText().toString());
@@ -111,9 +111,13 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
                             Snackbar snackbar = Snackbar.make( activity_main, "Password length must be 8", Snackbar.LENGTH_SHORT);
                             snackbar.show();
                         }
+                        else {
+                            Snackbar snackbar = Snackbar.make( activity_main, "Wrong Password", Snackbar.LENGTH_SHORT);
+                            snackbar.show();
+                        }
                     }
                     else{
-                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        LoginActivity.this.startActivity(new Intent (LoginActivity.this, MainActivity.class));
                     }
                 }
             });
