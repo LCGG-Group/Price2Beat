@@ -19,6 +19,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="firebase_web_api" translatable="false">AIzaSyA-yzkQaRJtro_GDN3ISpoflDXJHHgE0Jw</string>
     <string name="facebook_application_id" translatable="false">1385729154859032</string>
     <string name="facebook_application_secret" translatable="false">0a0ab5f92305efec65a5a4748a79c74e</string>
 </resources>

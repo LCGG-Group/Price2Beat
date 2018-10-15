@@ -72,6 +72,11 @@ public class FacebookLoginActivity extends AppCompatActivity implements OnClickL
         btnFacebookLogin.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+                AccessToken tok;
+                tok = AccessToken.getCurrentAccessToken();
+                tok.getUserId();
+
+
                 handleFacebookAccessToken(loginResult.getAccessToken());
             }
 
