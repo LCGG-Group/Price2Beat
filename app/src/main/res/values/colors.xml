@@ -8,4 +8,5 @@
     //QR Code
     <color name="black">#000000</color>
     <color name="white">#ffffff</color>
+    <color name="whiteTransparent">#80ffffff</color>
 </resources>
