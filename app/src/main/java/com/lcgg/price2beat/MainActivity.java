@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.navigation_settings:
                     fragment = new SettingsFragment();
+                    //fragment = new SettingsFragmentProfile();
                     break;
             }
             return loadFragment(fragment);

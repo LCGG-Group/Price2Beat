@@ -72,11 +72,6 @@ public class FacebookLoginActivity extends AppCompatActivity implements OnClickL
         btnFacebookLogin.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                AccessToken tok;
-                tok = AccessToken.getCurrentAccessToken();
-                tok.getUserId();
-
-
                 handleFacebookAccessToken(loginResult.getAccessToken());
             }
 
@@ -87,7 +82,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements OnClickL
 
             @Override
             public void onError(FacebookException error) {
-                Toast.makeText(FacebookLoginActivity.this, "Something bad happend", Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -122,11 +117,8 @@ public class FacebookLoginActivity extends AppCompatActivity implements OnClickL
             .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
-                    if(!task.isSuccessful()){
-                        Toast.makeText(FacebookLoginActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
-                    }
-                    else{
-                        Toast.makeText(FacebookLoginActivity.this, "Authentication Success", Toast.LENGTH_SHORT).show();
+                    if(task.isSuccessful()){
+                        FacebookLoginActivity.this.startActivity(new Intent (FacebookLoginActivity.this, MainActivity.class));
                     }
                 }
             });

@@ -3,7 +3,9 @@ package com.lcgg.price2beat;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import android.media.MediaScannerConnection;
 import android.os.Environment;
 import android.util.Log;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.TableLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,10 +34,11 @@ import java.util.Calendar;
 
 public class SettingsFragment extends Fragment {
 
-    public final static int QRcodeWidth = 500 ;
     private FirebaseAuth auth;
-    private ImageView iv;
-    Bitmap bitmap ;
+
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -43,8 +47,8 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         auth = FirebaseAuth.getInstance();
-
     }
 
     @Override
@@ -53,52 +57,19 @@ public class SettingsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
-        iv = view.findViewById(R.id.iv);
+        tabLayout = (TabLayout) view.findViewById(R.id.tabLayout_id);
+        viewPager = (ViewPager) view.findViewById(R.id.viewPager_id);
+
+        ViewPagerAdapter adapter =  new ViewPagerAdapter(getChildFragmentManager());
+        adapter.AddFragment(new HomeFragment(), "Home");
+        adapter.AddFragment(new SettingsFragmentProfile(), "Profile");
+        viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
 
         FirebaseUser user = auth.getCurrentUser();
 
-        try {
-            bitmap = TextToImageEncode(user.getUid().toString());
-            iv.setImageBitmap(bitmap);
-        } catch (WriterException e) {
-            e.printStackTrace();
-        }
 
         return view;
-    }
-
-    private Bitmap TextToImageEncode(String Value) throws WriterException {
-        BitMatrix bitMatrix;
-        try {
-            bitMatrix = new MultiFormatWriter().encode(
-                    Value,
-                    BarcodeFormat.DATA_MATRIX.QR_CODE,
-                    QRcodeWidth, QRcodeWidth, null
-            );
-
-        } catch (IllegalArgumentException Illegalargumentexception) {
-
-            return null;
-        }
-        int bitMatrixWidth = bitMatrix.getWidth();
-
-        int bitMatrixHeight = bitMatrix.getHeight();
-
-        int[] pixels = new int[bitMatrixWidth * bitMatrixHeight];
-
-        for (int y = 0; y < bitMatrixHeight; y++) {
-            int offset = y * bitMatrixWidth;
-
-            for (int x = 0; x < bitMatrixWidth; x++) {
-
-                pixels[offset + x] = bitMatrix.get(x, y) ?
-                        getResources().getColor(R.color.black):getResources().getColor(R.color.white);
-            }
-        }
-        Bitmap bitmap = Bitmap.createBitmap(bitMatrixWidth, bitMatrixHeight, Bitmap.Config.ARGB_4444);
-
-        bitmap.setPixels(pixels, 0, 500, 0, 0, bitMatrixWidth, bitMatrixHeight);
-        return bitmap;
     }
 
 }
