@@ -2,18 +2,34 @@ package com.lcgg.price2beat;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
+
+import java.util.List;
+import java.util.Map;
 
 public class SettingsFragmentProfile extends Fragment {
 
@@ -21,6 +37,12 @@ public class SettingsFragmentProfile extends Fragment {
     private FirebaseAuth auth;
     private ImageView iv;
     Bitmap bitmap ;
+
+    FirebaseDatabase database;
+    DatabaseReference refUser;
+
+    TextView editName, editEmail, editPoints;
+    User user;
 
     public SettingsFragmentProfile() {
         // Required empty public constructor
@@ -37,14 +59,25 @@ public class SettingsFragmentProfile extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_settings_profile, container, false);
+        final View view = inflater.inflate(R.layout.fragment_settings_profile, container, false);
+
+        editName = (TextView) view.findViewById(R.id.profileName);
+        editEmail = (TextView) view.findViewById(R.id.profileEmail);
+        editPoints = (TextView) view.findViewById(R.id.points);
+
+        FirebaseUser firebaseUser = auth.getCurrentUser();
+        database = FirebaseDatabase.getInstance();
+
+        //Users
+        refUser = database.getReference("User").child(auth.getUid());
+        refUser.addListenerForSingleValueEvent(valueEventListener);
+
+
 
         iv = view.findViewById(R.id.iv);
 
-        FirebaseUser user = auth.getCurrentUser();
-
         try {
-            bitmap = TextToImageEncode(user.getUid().toString());
+            bitmap = TextToImageEncode(firebaseUser.getUid().toString());
             iv.setImageBitmap(bitmap);
         } catch (WriterException e) {
             e.printStackTrace();
@@ -53,6 +86,20 @@ public class SettingsFragmentProfile extends Fragment {
         return view;
     }
 
+    private ValueEventListener valueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            user = dataSnapshot.getValue(User.class);
+
+            editName.setText(user.getDisplayName());
+            editEmail.setText(user.getEmail());
+            editPoints.setText(user.getPoints().toString());
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
     private Bitmap TextToImageEncode(String Value) throws WriterException {
         BitMatrix bitMatrix;
         try {
@@ -86,5 +133,4 @@ public class SettingsFragmentProfile extends Fragment {
         bitmap.setPixels(pixels, 0, 500, 0, 0, bitMatrixWidth, bitMatrixHeight);
         return bitmap;
     }
-
 }

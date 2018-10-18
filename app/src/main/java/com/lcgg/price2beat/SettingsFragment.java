@@ -61,8 +61,10 @@ public class SettingsFragment extends Fragment {
         viewPager = (ViewPager) view.findViewById(R.id.viewPager_id);
 
         ViewPagerAdapter adapter =  new ViewPagerAdapter(getChildFragmentManager());
-        adapter.AddFragment(new HomeFragment(), "Home");
+
         adapter.AddFragment(new SettingsFragmentProfile(), "Profile");
+        adapter.AddFragment(new SettingsFragmentSettings(), "Wallet");
+
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
 
