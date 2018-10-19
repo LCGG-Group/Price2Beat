@@ -96,7 +96,9 @@ public class FacebookLoginActivity extends AppCompatActivity implements OnClickL
                 if(user != null){
                     txtEmail.setText(user.getEmail());
                     txtUser.setText(user.getDisplayName());
-                    Picasso.with(FacebookLoginActivity.this).load(user.getPhotoUrl()).into(imgProfile);
+                    //Picasso.with(FacebookLoginActivity.this).load(user.getPhotoUrl()).into(imgProfile);
+                    Picasso.get().load(user.getPhotoUrl()).into(imgProfile);
+
                     btnFacebookLogin.setVisibility(View.GONE);
                     btnFacebookLogout.setVisibility(View.VISIBLE);
                 }
