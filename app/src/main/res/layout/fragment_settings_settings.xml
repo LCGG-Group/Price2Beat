@@ -14,15 +14,44 @@
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18dp"
             android:text="Amount: "
+            android:textStyle="bold"
             android:id="@+id/txtPoints"/>
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
+            android:textSize="18dp"
+            android:textStyle="bold"
             android:id="@+id/amount"/>
+
+
+        
+        
+    </LinearLayout>
+    
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Amount"
+            android:id="@+id/editAmount"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Amount"
+            android:layout_below="@+id/editAmount"
+            android:id="@+id/btnAmount"/>
+
     </LinearLayout>
 
 </FrameLayout>

@@ -55,11 +55,7 @@ public class CustomAdapter extends BaseAdapter {
         ImageView imageUrl = (ImageView) view.findViewById(R.id.icon);
 
         store.setText(storeList.get(i));
-
-        StorageReference filepath = FirebaseStorage.getInstance().getReference();
-
         Picasso.get().load(logos.get(i)).into(imageUrl);
-        //imageUrl.setImageResource(logos.get(i));
 
         return view;
     }
