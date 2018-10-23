@@ -128,9 +128,7 @@ public class SettingsFragmentProfile extends Fragment {
             refUser.child("lastName").setValue(lastName);
 
             //Display
-            editName.setText(user.getDisplayName());
-            editEmail.setText(user.getEmail());
-            editPoints.setText(user.getPoints().toString());
+            editName.setText(displayName);
 
             //updateLinear.setVisibility(View.GONE);
             //displayLinear.setVisibility(View.VISIBLE);
