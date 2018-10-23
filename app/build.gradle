@@ -6,7 +6,8 @@ android {
         Price2Beat {
             keyAlias 'Price2Beat'
             keyPassword 'gO@t3aM23'
-            storeFile file('C:/Users/len.carlo.g.gonzales/Documents/LCGG/personal/codes.android/Android/Keystore/Price2Beat.jks')
+            //storeFile file('C:/Users/len.carlo.g.gonzales/Documents/LCGG/personal/codes.android/Android/Keystore/Price2Beat.jks')
+            storeFile file('~/app/keystore/Price2Beat.jks')
             storePassword 'gO@t3aM23'
         }
     }
