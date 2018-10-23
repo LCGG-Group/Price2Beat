@@ -2,15 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
-    signingConfigs {
-        Price2Beat {
-            keyAlias 'Price2Beat'
-            keyPassword 'gO@t3aM23'
-            storeFile file('C:/Users/len.carlo.g.gonzales/Documents/LCGG/personal/codes.android/Android/Keystore/Price2Beat.jks')
-            //storeFile file("${buildDir}/Price2Beat/app/keystore/Price2Beat.jks")
-            storePassword 'gO@t3aM23'
-        }
-    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.lcgg.price2beat"
@@ -19,7 +10,6 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        signingConfig signingConfigs.Price2Beat
     }
     buildTypes {
         release {
