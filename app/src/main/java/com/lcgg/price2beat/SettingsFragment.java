@@ -62,14 +62,14 @@ public class SettingsFragment extends Fragment {
 
         ViewPagerAdapter adapter =  new ViewPagerAdapter(getChildFragmentManager());
 
-        adapter.AddFragment(new SettingsFragmentProfile(), "Profile");
+        adapter.AddFragment(new SettingsFragmentProfile(), "Personal");
+        adapter.AddFragment(new SettingsFragmentQRCode(), "QR Code");
         adapter.AddFragment(new SettingsFragmentSettings(), "Wallet");
 
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
 
         FirebaseUser user = auth.getCurrentUser();
-
 
         return view;
     }

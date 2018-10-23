@@ -31,6 +31,7 @@ import com.paypal.android.sdk.payments.PaymentConfirmActivity;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.math.BigDecimal;
 
@@ -55,7 +56,6 @@ public class SettingsFragmentSettings extends Fragment {
     Wallet wallet;
 
     String amount = "";
-
 
     public SettingsFragmentSettings() {
         // Required empty public constructor
@@ -159,6 +159,8 @@ public class SettingsFragmentSettings extends Fragment {
                 if (confirmation != null){
                     try{
                         String paymentDetails = confirmation.toJSONObject().toString(4);
+
+                        JSONObject jsonObject = new JSONObject(paymentDetails);
 
                         refWallet.addListenerForSingleValueEvent(valueEventListenerWalletPaypal);
                     }
