@@ -1,6 +1,7 @@
 package com.lcgg.price2beat;
 
 import android.graphics.Bitmap;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -66,11 +67,11 @@ public class SettingsFragmentProfile extends Fragment {
 
         final View view = inflater.inflate(R.layout.fragment_settings_profile, container, false);
 
-        //updateLinear = (LinearLayout) view.findViewById(R.id.updateLinear);
-        //displayLinear = (LinearLayout) view.findViewById(R.id.displayLinear);
+        updateLinear = (LinearLayout) view.findViewById(R.id.updateLinear);
+        displayLinear = (LinearLayout) view.findViewById(R.id.displayLinear);
 
-        //updateLinear.setVisibility(View.GONE);
-        //displayLinear.setVisibility(View.VISIBLE);
+        updateLinear.setVisibility(View.GONE);
+        displayLinear.setVisibility(View.VISIBLE);
 
         editName = (TextView) view.findViewById(R.id.profileName);
         editEmail = (TextView) view.findViewById(R.id.profileEmail);
@@ -81,6 +82,7 @@ public class SettingsFragmentProfile extends Fragment {
         updateLast = (EditText) view.findViewById(R.id.editProfileLast);
 
         btnUpdate = (Button) view.findViewById(R.id.updateProfile);
+        btnEdit = (Button) view.findViewById(R.id.editProfile);
 
         FirebaseUser firebaseUser = auth.getCurrentUser();
         database = FirebaseDatabase.getInstance();
@@ -89,8 +91,11 @@ public class SettingsFragmentProfile extends Fragment {
         refUser = database.getReference("User").child(auth.getUid());
         refUser.addListenerForSingleValueEvent(valueEventListener);
 
+        btnEdit.setVisibility(View.VISIBLE);
+        btnUpdate.setVisibility(View.GONE);
+
         btnUpdate.setOnClickListener(updateListener);
-        //btnEdit.setOnClickListener(updateListenerEdit);
+        btnEdit.setOnClickListener(updateListenerEdit);
 
         return view;
     }
@@ -105,8 +110,11 @@ public class SettingsFragmentProfile extends Fragment {
     private View.OnClickListener updateListenerEdit = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            //updateLinear.setVisibility(View.VISIBLE);
-            //displayLinear.setVisibility(View.GONE);
+            updateLinear.setVisibility(View.VISIBLE);
+            displayLinear.setVisibility(View.GONE);
+
+            btnEdit.setVisibility(View.GONE);
+            btnUpdate.setVisibility(View.VISIBLE);
         }
     };
 
@@ -130,8 +138,13 @@ public class SettingsFragmentProfile extends Fragment {
             //Display
             editName.setText(displayName);
 
-            //updateLinear.setVisibility(View.GONE);
-            //displayLinear.setVisibility(View.VISIBLE);
+            //Change Layouts
+            updateLinear.setVisibility(View.GONE);
+            displayLinear.setVisibility(View.VISIBLE);
+
+            //Change Buttons
+            btnEdit.setVisibility(View.VISIBLE);
+            btnUpdate.setVisibility(View.GONE);
         }
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
