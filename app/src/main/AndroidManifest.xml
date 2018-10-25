@@ -45,9 +45,6 @@
         <activity
             android:name=".ForgotPasswordActivity"
             android:label="Forgot Password" />
-        <activity
-            android:name=".FacebookLoginActivity"
-            android:label="Facebook" />
 
         <activity
             android:name=".MainActivity"

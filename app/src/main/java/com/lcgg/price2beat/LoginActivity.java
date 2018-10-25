@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Intent;
+import android.widget.Toast;
 
 public class LoginActivity extends AppCompatActivity implements OnClickListener {
 
@@ -51,7 +52,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
 
     TextView txtForgot;
     EditText inputEmail;
-    EditText inputPasword;
+    EditText inputPassword;
     LinearLayout activity_main;
 
     @Override
@@ -60,7 +61,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         setContentView(R.layout.activity_login);
 
         inputEmail = (EditText)findViewById(R.id.email);
-        inputPasword = (EditText)findViewById(R.id.password);
+        inputPassword = (EditText)findViewById(R.id.password);
 
         txtForgot = (TextView) findViewById(R.id.email_forgotpassword);
         btnLogin = (Button)findViewById(R.id.email_sign_in_button);
@@ -93,12 +94,8 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
             //finish();
         }
         else if(v.getId() == R.id.email_sign_in_button){
-            loginUser(inputEmail.getText().toString(), inputPasword.getText().toString());
+            loginUser(inputEmail.getText().toString(), inputPassword.getText().toString());
         }
-    }
-
-    public void facebookLogin(View v) {
-        startActivity(new Intent(LoginActivity.this, FacebookLoginActivity.class));
     }
 
     private void loginUser(String email, final String password) {

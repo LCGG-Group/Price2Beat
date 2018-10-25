@@ -23,6 +23,7 @@ android {
 }
 
 dependencies {
+    //Bar Code
     implementation 'com.google.zxing:core:3.3.0'
 }
 

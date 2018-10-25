@@ -29,7 +29,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:id="@+id/profileName"/>
 
 
@@ -49,7 +49,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:id="@+id/profileEmail"/>
         </LinearLayout>
 
@@ -68,7 +68,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:id="@+id/points"/>
         </LinearLayout>
 
@@ -92,7 +92,8 @@
             <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
+                android:inputType="text"
+                android:layout_marginStart="5dp"
                 android:id="@+id/editProfileFirst"/>
         </LinearLayout>
         <LinearLayout
@@ -108,7 +109,8 @@
             <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
+                android:inputType="text"
+                android:layout_marginStart="5dp"
                 android:id="@+id/editProfileMiddle"/>
 
 
@@ -126,7 +128,8 @@
             <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
+                android:inputType="text"
+                android:layout_marginStart="5dp"
                 android:id="@+id/editProfileLast"/>
 
 
@@ -134,12 +137,27 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/updateProfile"
+
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Update Profile" />
+        android:layout_gravity="center">
+
+        <Button
+            android:id="@+id/cancelUpdate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:text="Cancel" />
+
+        <Button
+            android:id="@+id/updateProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/editProfile"

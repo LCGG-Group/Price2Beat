@@ -1,5 +1,6 @@
 package com.lcgg.price2beat;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.opengl.Visibility;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +18,20 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.internal.WebDialog;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,13 +43,15 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
+import java.security.AuthProvider;
 import java.util.List;
 import java.util.Map;
 
 public class SettingsFragmentProfile extends Fragment {
 
-    public final static int QRcodeWidth = 500 ;
     private FirebaseAuth auth;
+    FirebaseAuth.AuthStateListener mAuthListener;
+    FirebaseUser firebaseUser;
 
     FirebaseDatabase database;
     DatabaseReference refUser;
@@ -47,8 +61,9 @@ public class SettingsFragmentProfile extends Fragment {
 
     LinearLayout displayLinear, updateLinear;
 
-    Button btnUpdate, btnEdit;
+    Button btnUpdate, btnEdit, btnCancel;
     User user;
+    AccessToken accessToken;
 
     public SettingsFragmentProfile() {
         // Required empty public constructor
@@ -83,9 +98,11 @@ public class SettingsFragmentProfile extends Fragment {
 
         btnUpdate = (Button) view.findViewById(R.id.updateProfile);
         btnEdit = (Button) view.findViewById(R.id.editProfile);
+        btnCancel = (Button) view.findViewById(R.id.cancelUpdate);
 
-        FirebaseUser firebaseUser = auth.getCurrentUser();
+        firebaseUser = auth.getCurrentUser();
         database = FirebaseDatabase.getInstance();
+        accessToken = AccessToken.getCurrentAccessToken();
 
         //Users
         refUser = database.getReference("User").child(auth.getUid());
@@ -93,9 +110,11 @@ public class SettingsFragmentProfile extends Fragment {
 
         btnEdit.setVisibility(View.VISIBLE);
         btnUpdate.setVisibility(View.GONE);
+        btnCancel.setVisibility(View.GONE);
 
         btnUpdate.setOnClickListener(updateListener);
         btnEdit.setOnClickListener(updateListenerEdit);
+        btnCancel.setOnClickListener(updateListenerCancel);
 
         return view;
     }
@@ -115,6 +134,19 @@ public class SettingsFragmentProfile extends Fragment {
 
             btnEdit.setVisibility(View.GONE);
             btnUpdate.setVisibility(View.VISIBLE);
+            btnCancel.setVisibility(View.VISIBLE);
+        }
+    };
+
+    private View.OnClickListener updateListenerCancel = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            updateLinear.setVisibility(View.GONE);
+            displayLinear.setVisibility(View.VISIBLE);
+
+            btnEdit.setVisibility(View.VISIBLE);
+            btnUpdate.setVisibility(View.GONE);
+            btnCancel.setVisibility(View.GONE);
         }
     };
 
@@ -145,6 +177,7 @@ public class SettingsFragmentProfile extends Fragment {
             //Change Buttons
             btnEdit.setVisibility(View.VISIBLE);
             btnUpdate.setVisibility(View.GONE);
+            btnCancel.setVisibility(View.GONE);
         }
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -159,6 +192,7 @@ public class SettingsFragmentProfile extends Fragment {
             editName.setText(user.getDisplayName());
             editEmail.setText(user.getEmail());
             editPoints.setText(user.getPoints().toString());
+
         }
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
