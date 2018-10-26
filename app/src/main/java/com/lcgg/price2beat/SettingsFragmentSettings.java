@@ -54,6 +54,7 @@ public class SettingsFragmentSettings extends Fragment {
     Button btnAmountPay;
 
     Wallet wallet;
+    User user;
 
     String amount = "";
 

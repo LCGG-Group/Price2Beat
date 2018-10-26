@@ -6,18 +6,16 @@ public class User {
     private String firstName;
     private String middleName;
     private String lastName;
-    private Double points;
 
     public User() {
     }
 
-    public User(String email, String displayName, String firstName, String middleName,String lastName, Double points) {
+    public User(String email, String displayName, String firstName, String middleName,String lastName) {
         this.email = email;
         this.displayName = displayName;
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
-        this.points = points;
     }
 
     public String getEmail() {
@@ -58,13 +56,5 @@ public class User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public Double getPoints() {
-        return points;
-    }
-
-    public void setPoints(Double points) {
-        this.points = points;
     }
 }

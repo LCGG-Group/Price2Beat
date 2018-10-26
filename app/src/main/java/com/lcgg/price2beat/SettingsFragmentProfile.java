@@ -191,8 +191,6 @@ public class SettingsFragmentProfile extends Fragment {
 
             editName.setText(user.getDisplayName());
             editEmail.setText(user.getEmail());
-            editPoints.setText(user.getPoints().toString());
-
         }
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
