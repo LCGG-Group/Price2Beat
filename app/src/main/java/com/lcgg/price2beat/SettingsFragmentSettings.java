@@ -47,7 +47,7 @@ public class SettingsFragmentSettings extends Fragment {
             .clientId(Config.PAYMENT_CLIENT_ID_SANDBOX);
 
     FirebaseDatabase database;
-    DatabaseReference refUser, refWallet;
+    DatabaseReference refPoints, refWallet;
 
     TextView editAmount;
     EditText editAmountPay;
@@ -97,6 +97,7 @@ public class SettingsFragmentSettings extends Fragment {
 
         //Wallet
         refWallet = database.getReference("Wallet").child(auth.getUid());
+        refPoints = database.getReference("Points").child(auth.getUid());
         refWallet.addListenerForSingleValueEvent(valueEventListenerWallet);
 
         return view;
@@ -144,6 +145,20 @@ public class SettingsFragmentSettings extends Fragment {
             editAmountPay.setText("");
 
             refWallet.child("amount").setValue(pp);
+
+            refPoints.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Double earnedPoints = Double.valueOf(editAmount.getText().toString()) / 25;
+
+                    refPoints.child("earned").setValue(earnedPoints);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         }
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {

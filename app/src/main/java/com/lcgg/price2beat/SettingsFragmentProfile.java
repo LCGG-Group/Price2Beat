@@ -54,7 +54,7 @@ public class SettingsFragmentProfile extends Fragment {
     FirebaseUser firebaseUser;
 
     FirebaseDatabase database;
-    DatabaseReference refUser;
+    DatabaseReference refUser, refPoints;
 
     TextView editName, editEmail, editPoints;
     EditText updateFirst, updateMiddle, updateLast;
@@ -106,6 +106,7 @@ public class SettingsFragmentProfile extends Fragment {
 
         //Users
         refUser = database.getReference("User").child(auth.getUid());
+        refPoints = database.getReference("Points").child(auth.getUid());
         refUser.addListenerForSingleValueEvent(valueEventListener);
 
         btnEdit.setVisibility(View.VISIBLE);
@@ -115,6 +116,20 @@ public class SettingsFragmentProfile extends Fragment {
         btnUpdate.setOnClickListener(updateListener);
         btnEdit.setOnClickListener(updateListenerEdit);
         btnCancel.setOnClickListener(updateListenerCancel);
+
+        refPoints.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Double points = dataSnapshot.child("earned").getValue(Double.class);
+
+                editPoints.setText(points.toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         return view;
     }
