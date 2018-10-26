@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+
 public class NotificationFragment extends Fragment {
 
     public NotificationFragment() {
@@ -22,6 +23,8 @@ public class NotificationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        getActivity().setTitle("Notifications");
 
         View view = inflater.inflate(R.layout.fragment_notification, container, false);
 

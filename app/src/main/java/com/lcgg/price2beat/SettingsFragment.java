@@ -55,6 +55,8 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        getActivity().setTitle("Profile");
+
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
         tabLayout = (TabLayout) view.findViewById(R.id.tabLayout_id);

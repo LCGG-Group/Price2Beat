@@ -55,6 +55,8 @@ public class StoreFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        getActivity().setTitle("Store");
+
         database = FirebaseDatabase.getInstance();
         refStore = database.getReference("Store");
         refStore.addListenerForSingleValueEvent(valueEventListener);
