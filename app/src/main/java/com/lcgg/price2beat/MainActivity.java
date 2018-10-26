@@ -39,15 +39,19 @@ public class MainActivity extends AppCompatActivity {
 
             switch (item.getItemId()) {
                 case R.id.navigation_home:
+                    getSupportActionBar().setTitle("Home");
                     fragment = new HomeFragment();
                     break;
                 case R.id.navigation_store:
+                    getSupportActionBar().setTitle("Store");
                     fragment = new StoreFragment();
                     break;
                 case R.id.navigation_notifications:
+                    getSupportActionBar().setTitle("Notification");
                     fragment = new NotificationFragment();
                     break;
                 case R.id.navigation_settings:
+                    getSupportActionBar().setTitle("Profile");
                     fragment = new SettingsFragment();
                     //fragment = new SettingsFragmentProfile();
                     break;
@@ -117,10 +121,12 @@ public class MainActivity extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
+        getSupportActionBar().setTitle("Home");
+        myToolbar.setLogo(R.mipmap.ic_launcher);
+
+
         //ActionBar ab = getSupportActionBar();
         //ab.setDisplayHomeAsUpEnabled(true);
-
-
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }

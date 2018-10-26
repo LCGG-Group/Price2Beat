@@ -24,8 +24,6 @@ public class NotificationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        getActivity().setTitle("Notifications");
-
         View view = inflater.inflate(R.layout.fragment_notification, container, false);
 
         return view;
