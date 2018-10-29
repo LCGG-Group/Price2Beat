@@ -34,18 +34,10 @@ import static android.net.wifi.WifiConfiguration.Status.strings;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class StoreFragment extends Fragment {
-    FirebaseDatabase database;
-    DatabaseReference refStore;
-    Query query;
 
-    ArrayList<String> storeListName = new ArrayList<String>();
-    ArrayList<String> storeListImage = new ArrayList<String>();
-    CustomAdapter customAdapter;
-
-    ListView storeList;
-    Store store;
-
-    @Override
+    public StoreFragment() {
+        // Required empty public constructor
+    }
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -55,53 +47,8 @@ public class StoreFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        database = FirebaseDatabase.getInstance();
-        refStore = database.getReference("Store");
-        refStore.addListenerForSingleValueEvent(valueEventListener);
-
         View view = inflater.inflate(R.layout.fragment_store, container, false);
-        storeList = (ListView) view.findViewById(R.id.storeListView);
-
-        customAdapter = new CustomAdapter(getActivity(), storeListName, storeListImage);
-        storeList.setAdapter(customAdapter);
-
-        storeList.setClickable(true);
-        storeList.setOnItemClickListener(itemSelected );
 
         return view;
     }
-
-    private AdapterView.OnItemClickListener itemSelected = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            String name = storeListName.get(position);
-            String logo = storeListImage.get(position);
-
-            ((FragmentActivity) view.getContext()).getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.frame_container, new StorePageFragment(name, logo))
-                    .commit();
-
-        }
-    };
-
-
-    private ValueEventListener valueEventListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            for(DataSnapshot ds : dataSnapshot.getChildren()){
-                store = ds.getValue(Store.class);
-                //Toast.makeText(getActivity(), store.getName(), Toast.LENGTH_SHORT).show();
-                storeListName.add(store.getName());
-                storeListImage.add(store.getImageUrl());
-
-                customAdapter.notifyDataSetChanged();
-            }
-        }
-        @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-        }
-    };
 }
