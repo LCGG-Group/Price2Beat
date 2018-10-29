@@ -9,9 +9,14 @@
         <item name="toolbarStyle">@style/AppTheme.MyToolbar</item>
     </style>
 
-    <style name="AppTheme.MyToolbar" parent="Widget.AppCompat.Toolbar">
+    <style name="AppTheme.MyToolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:background">@color/colorPrimary</item>
         <item name="titleTextAppearance">@style/AppTheme.TitleTextStyle</item>
+    </style>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:background">@android:color/white</item>
+        <item name="android:textColor">@color/black</item>
     </style>
 
     <style name="AppTheme.TitleTextStyle" parent ="TextAppearance.Widget.AppCompat.Toolbar.Title">
