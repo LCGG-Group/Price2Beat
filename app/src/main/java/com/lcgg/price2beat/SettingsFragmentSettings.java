@@ -8,6 +8,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -47,16 +48,17 @@ public class SettingsFragmentSettings extends Fragment {
             .clientId(Config.PAYMENT_CLIENT_ID_SANDBOX);
 
     FirebaseDatabase database;
-    DatabaseReference refPoints, refWallet;
+    DatabaseReference refPoints, refWallet, refTransfer, refUser;
 
     TextView editAmount;
-    EditText editAmountPay;
-    Button btnAmountPay;
+    EditText editAmountPay, editUserId;
+    Button btnAmountPay, btnTransfer;
 
     Wallet wallet;
     User user;
 
     String amount = "";
+    String walletId = "";
 
     public SettingsFragmentSettings() {
         // Required empty public constructor
@@ -89,20 +91,45 @@ public class SettingsFragmentSettings extends Fragment {
         editAmountPay = (EditText) view.findViewById(R.id.editAmount);
         btnAmountPay = (Button) view.findViewById(R.id.btnAmount);
 
-        btnAmountPay.setOnClickListener(paypalListener);
+        editUserId = (EditText) view.findViewById(R.id.editUserId);
+        btnTransfer = (Button) view.findViewById(R.id.btnTransferAmount);
 
+        btnAmountPay.setOnClickListener(paypalListener);
+        btnTransfer.setOnClickListener(transferListener);
+        editUserId.setOnTouchListener(userListener);
 
         FirebaseUser firebaseUser = auth.getCurrentUser();
         database = FirebaseDatabase.getInstance();
 
         //Wallet
+        refUser = database.getReference("User");
         refWallet = database.getReference("Wallet").child(auth.getUid());
         refPoints = database.getReference("Points").child(auth.getUid());
+        refTransfer = database.getReference("Wallet");
+
         refWallet.addListenerForSingleValueEvent(valueEventListenerWallet);
 
         return view;
     }
 
+
+
+
+    private View.OnTouchListener userListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            processUser();
+            return true;
+        }
+    };
+
+
+    private View.OnClickListener transferListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            processTransfer();
+        }
+    };
     private View.OnClickListener paypalListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -110,6 +137,23 @@ public class SettingsFragmentSettings extends Fragment {
         }
     };
 
+    private void processUser() {
+        walletId = "mpd4k2hHoMQKMIbjTQdLwUutdD92";
+        refUser.child(walletId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                editUserId.setText(dataSnapshot.child("displayName").getValue(String.class));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+    private void processTransfer() {
+        refTransfer.addListenerForSingleValueEvent(valueEventListenerTransfer);
+    }
     private void processPayment() {
         amount = editAmountPay.getText().toString();
 
@@ -122,6 +166,43 @@ public class SettingsFragmentSettings extends Fragment {
         startActivityForResult(intent, PAYPAL_REQUEST_CODE);
     }
 
+    private ValueEventListener valueEventListenerTransfer = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            wallet = dataSnapshot.getValue(Wallet.class);
+
+            refWallet.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Double ownWallet = dataSnapshot.child("amount").getValue(Double.class) - Double.valueOf(editAmountPay.getText().toString());
+                    refWallet.child("amount").setValue(ownWallet);
+
+                    editAmount.setText(ownWallet.toString());
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+            refTransfer.child(walletId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Double sendMoney = dataSnapshot.child("amount").getValue(Double.class)+ Double.valueOf(editAmountPay.getText().toString());
+                    refTransfer.child(walletId).child("amount").setValue(sendMoney);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
     private ValueEventListener valueEventListenerWallet = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -134,7 +215,6 @@ public class SettingsFragmentSettings extends Fragment {
 
         }
     };
-
     private ValueEventListener valueEventListenerWalletPaypal = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

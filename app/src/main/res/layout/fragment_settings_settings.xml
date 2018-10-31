@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".HomeFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -15,7 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18dp"
-            android:text="Amount: "
+            android:text="Remaining Amount: "
+            android:layout_margin="15dp"
             android:textStyle="bold"
             android:id="@+id/txtPoints"/>
 
@@ -28,26 +30,54 @@
             android:id="@+id/amount"/>
         
     </LinearLayout>
-    
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="25dp"
+        android:inputType="text"
+        android:hint="Enter Amount"
+        android:id="@+id/editAmount"/>
+
     <LinearLayout
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="35dp">
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter Amount"
-            android:id="@+id/editAmount"/>
+        android:layout_below="@id/editAmount"
+        android:layout_gravity="center_horizontal" >
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
             android:text="Add Amount"
-            android:layout_below="@+id/editAmount"
             android:id="@+id/btnAmount"/>
 
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="25dp">
+
+            <EditText
+                android:id="@+id/editUserId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Transfer to whom?"
+                android:inputType="none" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Transfer Amount"
+                android:layout_below="@+id/editAmount"
+                android:id="@+id/btnTransferAmount"/>
+
+        </LinearLayout>
     </LinearLayout>
 
-</FrameLayout>
+
+
+</LinearLayout>
