@@ -27,15 +27,14 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     private TextView mTextMessage;
+    Fragment fragment = null;
+    FragmentManager transaction = getSupportFragmentManager();
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            Fragment fragment = null;
-
-            FragmentManager transaction = getSupportFragmentManager();
 
             switch (item.getItemId()) {
                 case R.id.navigation_home:
@@ -51,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
                     fragment = new NotificationFragment();
                     break;
                 case R.id.navigation_settings:
-                    getSupportActionBar().setTitle("Profile");
+                    getSupportActionBar().setTitle("Wallet");
                     fragment = new SettingsFragment();
                     //fragment = new SettingsFragmentProfile();
                     break;
@@ -88,7 +87,14 @@ public class MainActivity extends AppCompatActivity {
                         });
 
                 return true;
+
+            case R.id.action_profile:
+                getSupportActionBar().setTitle("Profile");
+                fragment = new SettingsFragmentProfile();
+
+                loadFragment(fragment);
         }
+
         return super.onOptionsItemSelected(item);
     }
 

@@ -9,10 +9,18 @@
         android:title="Option Menu"
         app:showAsAction="always">
         <menu>
+
+            <item
+                android:id="@+id/action_profile"
+                android:icon="@drawable/ic_person_black_24dp"
+                android:title="Profile" />
+
             <item
                 android:id="@+id/action_logout"
                 android:icon="@drawable/ic_exit_to_app_black_24dp"
                 android:title="Logout" />
+
+
         </menu>
     </item>
 </menu>

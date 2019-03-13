@@ -1,12 +1,17 @@
 package com.lcgg.price2beat;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -35,6 +40,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Random;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -48,7 +57,7 @@ public class SettingsFragmentSettings extends Fragment {
             .clientId(Config.PAYMENT_CLIENT_ID_SANDBOX);
 
     FirebaseDatabase database;
-    DatabaseReference refPoints, refWallet, refTransfer, refUser;
+    DatabaseReference refPoints, refWallet, refTransfer, refUser, refTransactions;
 
     TextView editAmount;
     EditText editAmountPay, editUserId;
@@ -88,15 +97,12 @@ public class SettingsFragmentSettings extends Fragment {
         View view = inflater.inflate(R.layout.fragment_settings_settings, container, false);
         editAmount = (TextView) view.findViewById(R.id.amount);
 
-        editAmountPay = (EditText) view.findViewById(R.id.editAmount);
         btnAmountPay = (Button) view.findViewById(R.id.btnAmount);
 
-        editUserId = (EditText) view.findViewById(R.id.editUserId);
         btnTransfer = (Button) view.findViewById(R.id.btnTransferAmount);
 
         btnAmountPay.setOnClickListener(paypalListener);
         btnTransfer.setOnClickListener(transferListener);
-        editUserId.setOnTouchListener(userListener);
 
         FirebaseUser firebaseUser = auth.getCurrentUser();
         database = FirebaseDatabase.getInstance();
@@ -106,6 +112,7 @@ public class SettingsFragmentSettings extends Fragment {
         refWallet = database.getReference("Wallet").child(auth.getUid());
         refPoints = database.getReference("Points").child(auth.getUid());
         refTransfer = database.getReference("Wallet");
+        refTransactions = database.getReference("Transactions").child(auth.getUid());
 
         refWallet.addListenerForSingleValueEvent(valueEventListenerWallet);
 
@@ -124,16 +131,67 @@ public class SettingsFragmentSettings extends Fragment {
     };
 
 
+    private void transferAmount(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.fragment_transfer_amount, null);
+        builder.setView(dialogView);
+
+        editAmountPay = (EditText) dialogView.findViewById(R.id.editAmount);
+        editUserId = (EditText) dialogView.findViewById(R.id.editUserId);
+        editUserId.setOnTouchListener(userListener);
+
+        builder.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //do something with edt.getText().toString();
+                processTransfer();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //pass
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
     private View.OnClickListener transferListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            processTransfer();
+            transferAmount();
         }
     };
+
+    private void addAmount(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.fragment_add_amount, null);
+        builder.setView(dialogView);
+
+        editAmountPay = (EditText) dialogView.findViewById(R.id.editAmount);
+
+        builder.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //do something with edt.getText().toString();
+                processPayment();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //pass
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
     private View.OnClickListener paypalListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            processPayment();
+            addAmount();
         }
     };
 
@@ -178,6 +236,33 @@ public class SettingsFragmentSettings extends Fragment {
                     refWallet.child("amount").setValue(ownWallet);
 
                     editAmount.setText(ownWallet.toString());
+
+                    refTransactions.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Date c = Calendar.getInstance().getTime();
+                            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+                            String formattedDate = df.format(c);
+
+                            Random generator = new Random();
+                            String refIdStart = walletId.substring(0,4);
+                            String refIdEnd = String.format("%04d", generator.nextInt(10000));
+                            String refDate = formattedDate.split("-")[2];
+
+                            String refId = refIdStart + refDate + refIdEnd;
+
+                            refTransactions.child("transfer").child(refId);
+                            refTransactions.child("transfer").child(refId).child("refNumber").setValue(refId);
+                            refTransactions.child("transfer").child(refId).child("amount").setValue(Double.valueOf(editAmountPay.getText().toString()));
+                            refTransactions.child("transfer").child(refId).child("transferTo").setValue(walletId);
+                            refTransactions.child("transfer").child(refId).child("date").setValue(formattedDate);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
                 }
 
                 @Override
@@ -246,8 +331,9 @@ public class SettingsFragmentSettings extends Fragment {
         }
     };
 
-    @Override
+     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         if (requestCode == PAYPAL_REQUEST_CODE){
             if (resultCode == RESULT_OK){
                 PaymentConfirmation confirmation = data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
@@ -259,16 +345,69 @@ public class SettingsFragmentSettings extends Fragment {
                         JSONObject jsonObject = new JSONObject(paymentDetails);
 
                         refWallet.addListenerForSingleValueEvent(valueEventListenerWalletPaypal);
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        LayoutInflater inflater = this.getLayoutInflater();
+                        final View dialogView = inflater.inflate(R.layout.fragment_alert, null);
+
+                        TextView alert = (TextView) dialogView.findViewById(R.id.txtAlert);
+                        alert.setText("Transaction successful");
+
+                        builder.setView(dialogView);
+                        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                //do something with edt.getText().toString();
+                                dialog.dismiss();
+                            }
+                        });
+
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.show();
                     }
                     catch (JSONException e){
                         e.printStackTrace();
                     }
                 }
             }
-            else if (resultCode == Activity.RESULT_CANCELED)
-                Toast.makeText(getActivity(), "Canceled", Toast.LENGTH_SHORT).show();
+            else if (resultCode == Activity.RESULT_CANCELED){
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                LayoutInflater inflater = this.getLayoutInflater();
+                final View dialogView = inflater.inflate(R.layout.fragment_alert, null);
+
+                TextView alert = (TextView) dialogView.findViewById(R.id.txtAlert);
+                alert.setText("Transaction canceled");
+
+                builder.setView(dialogView);
+                builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        //do something with edt.getText().toString();
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+            }
         }
         else if (requestCode == PaymentActivity.RESULT_EXTRAS_INVALID)
-            Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT).show();
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            LayoutInflater inflater = this.getLayoutInflater();
+            final View dialogView = inflater.inflate(R.layout.fragment_alert, null);
+
+            TextView alert = (TextView) dialogView.findViewById(R.id.txtAlert);
+            alert.setText("Invalid Transaction");
+
+            builder.setView(dialogView);
+            builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    //do something with edt.getText().toString();
+                    dialog.dismiss();
+                }
+            });
+
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
     }
 }
