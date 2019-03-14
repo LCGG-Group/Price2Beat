@@ -68,4 +68,9 @@ dependencies {
     implementation 'com.paypal.sdk:paypal-android-sdk:2.15.3'
 }
 
+dependencies {
+    implementation 'com.journeyapps:zxing-android-embedded:3.4.0'
+}
+
+
 apply plugin: 'com.google.gms.google-services'

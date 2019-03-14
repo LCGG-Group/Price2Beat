@@ -36,6 +36,9 @@ import com.paypal.android.sdk.payments.PaymentActivity;
 import com.paypal.android.sdk.payments.PaymentConfirmActivity;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -58,6 +61,8 @@ public class SettingsFragmentSettings extends Fragment {
 
     FirebaseDatabase database;
     DatabaseReference refPoints, refWallet, refTransfer, refUser, refTransactions;
+
+    private IntentIntegrator qrScan;
 
     TextView editAmount;
     EditText editAmountPay, editUserId;
@@ -121,17 +126,9 @@ public class SettingsFragmentSettings extends Fragment {
 
 
 
-
-    private View.OnTouchListener userListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            processUser();
-            return true;
-        }
-    };
-
-
     private void transferAmount(){
+
+        qrScan = new IntentIntegrator(getActivity());
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         LayoutInflater inflater = this.getLayoutInflater();
@@ -188,6 +185,17 @@ public class SettingsFragmentSettings extends Fragment {
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
+    private void processPayment() {
+        amount = editAmountPay.getText().toString();
+
+        PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amount)), "USD",
+                "Donate for Price2Beat", PayPalPayment.PAYMENT_INTENT_SALE);
+
+        Intent intent = new Intent(getActivity(), PaymentActivity.class)
+                .putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config)
+                .putExtra(PaymentActivity.EXTRA_PAYMENT, payPalPayment);
+        startActivityForResult(intent, PAYPAL_REQUEST_CODE);
+    }
     private View.OnClickListener paypalListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -195,8 +203,16 @@ public class SettingsFragmentSettings extends Fragment {
         }
     };
 
+    private View.OnTouchListener userListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            processUser();
+            return true;
+        }
+    };
     private void processUser() {
-        walletId = "mpd4k2hHoMQKMIbjTQdLwUutdD92";
+        qrScan.initiateScan();
+
         refUser.child(walletId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -212,18 +228,6 @@ public class SettingsFragmentSettings extends Fragment {
     private void processTransfer() {
         refTransfer.addListenerForSingleValueEvent(valueEventListenerTransfer);
     }
-    private void processPayment() {
-        amount = editAmountPay.getText().toString();
-
-        PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amount)), "USD",
-                "Donate for Price2Beat", PayPalPayment.PAYMENT_INTENT_SALE);
-
-        Intent intent = new Intent(getActivity(), PaymentActivity.class)
-                .putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config)
-                .putExtra(PaymentActivity.EXTRA_PAYMENT, payPalPayment);
-        startActivityForResult(intent, PAYPAL_REQUEST_CODE);
-    }
-
     private ValueEventListener valueEventListenerTransfer = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -256,6 +260,8 @@ public class SettingsFragmentSettings extends Fragment {
                             refTransactions.child("transfer").child(refId).child("amount").setValue(Double.valueOf(editAmountPay.getText().toString()));
                             refTransactions.child("transfer").child(refId).child("transferTo").setValue(walletId);
                             refTransactions.child("transfer").child(refId).child("date").setValue(formattedDate);
+
+                            alertBox("Transfer Amount","Transaction successful");
                         }
 
                         @Override
@@ -288,6 +294,7 @@ public class SettingsFragmentSettings extends Fragment {
 
         }
     };
+
     private ValueEventListener valueEventListenerWallet = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -331,8 +338,58 @@ public class SettingsFragmentSettings extends Fragment {
         }
     };
 
+    private void alertBox(String title, String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.fragment_alert, null);
+
+        TextView alerTitle = (TextView) dialogView.findViewById(R.id.titleAlert);
+        alerTitle.setText(title);
+
+        TextView alert = (TextView) dialogView.findViewById(R.id.txtAlert);
+        alert.setText(message);
+
+        builder.setView(dialogView);
+        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //do something with edt.getText().toString();
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
      @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+         if (result != null) {
+             //if qrcode has nothing in it
+             if (result.getContents() == null) {
+                 Toast.makeText(getContext(), "Result Not Found", Toast.LENGTH_LONG).show();
+             } else {
+                 //if qr contains data
+                 try {
+                     //converting the data to json
+                     JSONObject obj = new JSONObject(result.getContents());
+                     //setting values to textviews
+                     walletId = obj.toString();
+                     Toast.makeText(getContext(), walletId, Toast.LENGTH_LONG).show();
+                 } catch (JSONException e) {
+                     e.printStackTrace();
+                     //if control comes here
+                     //that means the encoded format not matches
+                     //in this case you can display whatever data is available on the qrcode
+                     //to a toast
+                     Toast.makeText(getContext(), result.getContents(), Toast.LENGTH_LONG).show();
+                 }
+             }
+         } else {
+             super.onActivityResult(requestCode, resultCode, data);
+         }
+
 
         if (requestCode == PAYPAL_REQUEST_CODE){
             if (resultCode == RESULT_OK){
@@ -346,23 +403,7 @@ public class SettingsFragmentSettings extends Fragment {
 
                         refWallet.addListenerForSingleValueEvent(valueEventListenerWalletPaypal);
 
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                        LayoutInflater inflater = this.getLayoutInflater();
-                        final View dialogView = inflater.inflate(R.layout.fragment_alert, null);
-
-                        TextView alert = (TextView) dialogView.findViewById(R.id.txtAlert);
-                        alert.setText("Transaction successful");
-
-                        builder.setView(dialogView);
-                        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                //do something with edt.getText().toString();
-                                dialog.dismiss();
-                            }
-                        });
-
-                        AlertDialog alertDialog = builder.create();
-                        alertDialog.show();
+                        alertBox("Add money", "Transaction successful");
                     }
                     catch (JSONException e){
                         e.printStackTrace();
@@ -370,44 +411,12 @@ public class SettingsFragmentSettings extends Fragment {
                 }
             }
             else if (resultCode == Activity.RESULT_CANCELED){
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                LayoutInflater inflater = this.getLayoutInflater();
-                final View dialogView = inflater.inflate(R.layout.fragment_alert, null);
-
-                TextView alert = (TextView) dialogView.findViewById(R.id.txtAlert);
-                alert.setText("Transaction canceled");
-
-                builder.setView(dialogView);
-                builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        //do something with edt.getText().toString();
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
+                alertBox("Add money", "Transaction canceled");
             }
         }
         else if (requestCode == PaymentActivity.RESULT_EXTRAS_INVALID)
         {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            LayoutInflater inflater = this.getLayoutInflater();
-            final View dialogView = inflater.inflate(R.layout.fragment_alert, null);
-
-            TextView alert = (TextView) dialogView.findViewById(R.id.txtAlert);
-            alert.setText("Invalid Transaction");
-
-            builder.setView(dialogView);
-            builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    //do something with edt.getText().toString();
-                    dialog.dismiss();
-                }
-            });
-
-            AlertDialog alertDialog = builder.create();
-            alertDialog.show();
+            alertBox("Add money", "Invalid transaction");
         }
     }
 }

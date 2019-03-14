@@ -38,6 +38,9 @@ import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PaymentActivity;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -52,6 +55,7 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 public class StoreFragment extends Fragment {
 
     private FirebaseAuth auth;
+    private IntentIntegrator qrScan;
 
     FirebaseDatabase database;
     DatabaseReference refPoints, refTransfer, refStore;
@@ -77,6 +81,8 @@ public class StoreFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_store, container, false);
+
+        qrScan = new IntentIntegrator(getActivity());
 
         editPayUser = (EditText) view.findViewById(R.id.editPayUser);
         editPay = (EditText) view.findViewById(R.id.editPay);
@@ -111,7 +117,8 @@ public class StoreFragment extends Fragment {
     };
 
     private void processUser() {
-        walletId = "mpd4k2hHoMQKMIbjTQdLwUutdD92";
+        qrScan.initiateScan();
+
         refStore.child(walletId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -161,5 +168,33 @@ public class StoreFragment extends Fragment {
         }
     };
 
-
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+            //if qrcode has nothing in it
+            if (result.getContents() == null) {
+                Toast.makeText(getContext(), "Result Not Found", Toast.LENGTH_LONG).show();
+            } else {
+                //if qr contains data
+                try {
+                    //converting the data to json
+                    JSONObject obj = new JSONObject(result.getContents());
+                    //setting values to textviews
+                    walletId = obj.toString();
+                    Toast.makeText(getContext(), walletId, Toast.LENGTH_LONG).show();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    //if control comes here
+                    //that means the encoded format not matches
+                    //in this case you can display whatever data is available on the qrcode
+                    //to a toast
+                    Toast.makeText(getContext(), result.getContents(), Toast.LENGTH_LONG).show();
+                }
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 }
