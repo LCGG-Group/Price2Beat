@@ -32,6 +32,7 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
     TextView txtForgot;
     EditText inputEmail;
     EditText inputPassword;
+    EditText inputPassword2;
     LinearLayout activity_register;
 
     @Override
@@ -41,6 +42,7 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
 
         inputEmail = (EditText)findViewById(R.id.register_email);
         inputPassword = (EditText)findViewById(R.id.register_password);
+        inputPassword2 = (EditText)findViewById(R.id.register_password2);
 
         txtForgot = (TextView) findViewById(R.id.register_forgotpassword);
         btnLogin = (Button)findViewById(R.id.register_sign_in_button);
@@ -70,14 +72,24 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
             finish();
         }
         else if(v.getId() == R.id.register_register_button){
+
             if(inputEmail.getText().toString().isEmpty()){
                 Toast.makeText(RegisterActivity.this, "Email address must not be empty", Toast.LENGTH_SHORT).show();
             }
             if(inputPassword.getText().toString().isEmpty()){
                 Toast.makeText(RegisterActivity.this, "Password must not be empty", Toast.LENGTH_SHORT).show();
             }
-            else
-            signUpUser(inputEmail.getText().toString(), inputPassword.getText().toString());
+            if(inputPassword2.getText().toString().isEmpty()){
+                Toast.makeText(RegisterActivity.this, "Retype password must not be empty", Toast.LENGTH_SHORT).show();
+            }
+            if(!inputPassword.getText().toString().equals(inputPassword.getText().toString())){
+
+                Toast.makeText(RegisterActivity.this, "Password doesn't match", Toast.LENGTH_SHORT).show();
+            }
+            if(inputPassword.getText().toString().equals(inputPassword.getText().toString())){
+                signUpUser(inputEmail.getText().toString(), inputPassword.getText().toString());
+            }
+
         }
     }
 
