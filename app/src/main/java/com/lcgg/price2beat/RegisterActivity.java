@@ -17,15 +17,28 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class RegisterActivity extends AppCompatActivity implements OnClickListener {
 
     private FirebaseAuth auth;
+    FirebaseAuth.AuthStateListener mAuthListener;
+    FirebaseUser firebaseUser;
+
+    FirebaseDatabase database;
+    DatabaseReference refUser, refPoints, refWallet;
+
     Button btnLogin;
     Button btnRegister;
 
@@ -56,6 +69,9 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
 
         //Initiate Firebase
         auth = FirebaseAuth.getInstance();
+
+        firebaseUser = auth.getCurrentUser();
+        database = FirebaseDatabase.getInstance();
     }
 
     @Override
@@ -131,6 +147,15 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
+
+                                refUser = database.getReference("User").child(auth.getUid());
+                                refPoints = database.getReference("Points").child(auth.getUid());
+                                refWallet = database.getReference("Wallet").child(auth.getUid());
+
+                                refUser.addListenerForSingleValueEvent(valueEventListenerUser);
+                                refPoints.addListenerForSingleValueEvent(valueEventListenerPoints);
+                                refWallet.addListenerForSingleValueEvent(valueEventListenerWallet);
+
                                 startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                                 finish();
                             }
@@ -141,5 +166,40 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
+
+    private ValueEventListener valueEventListenerUser = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+            refUser.child("displayName").setValue(inputEmail.getText().toString());
+            refUser.child("email").setValue(inputEmail.getText().toString());
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
+    private ValueEventListener valueEventListenerPoints = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+            refPoints.child("earned").setValue(0);
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
+    private ValueEventListener valueEventListenerWallet = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+            refWallet.child("amount").setValue(0);
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
 }
 
