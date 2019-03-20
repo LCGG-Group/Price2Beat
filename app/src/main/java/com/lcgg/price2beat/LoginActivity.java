@@ -94,7 +94,14 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
             //finish();
         }
         else if(v.getId() == R.id.email_sign_in_button){
-            loginUser(inputEmail.getText().toString(), inputPassword.getText().toString());
+            if(inputEmail.getText().toString().isEmpty()){
+                Toast.makeText(LoginActivity.this, "Email address must not be empty", Toast.LENGTH_SHORT).show();
+            }
+            if(inputPassword.getText().toString().isEmpty()){
+                Toast.makeText(LoginActivity.this, "Enter your password", Toast.LENGTH_SHORT).show();
+            }
+            else
+                loginUser(inputEmail.getText().toString(), inputPassword.getText().toString());
         }
     }
 
@@ -105,7 +112,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(!task.isSuccessful()){
                         if(password.length() < 8){
-                            Snackbar snackbar = Snackbar.make( activity_main, "Password length must be 8", Snackbar.LENGTH_SHORT);
+                            Snackbar snackbar = Snackbar.make( activity_main, "Password length must not less than 8 characters", Snackbar.LENGTH_SHORT);
                             snackbar.show();
                         }
                         else {

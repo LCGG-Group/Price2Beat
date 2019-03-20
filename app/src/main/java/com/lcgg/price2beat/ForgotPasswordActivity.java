@@ -1,10 +1,13 @@
 package com.lcgg.price2beat;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -13,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -53,11 +57,34 @@ public class ForgotPasswordActivity extends AppCompatActivity implements OnClick
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()){
-                            Snackbar snackbar = Snackbar.make( activity_forgot, "Check your email to reset your password.", Snackbar.LENGTH_SHORT);
-                            snackbar.show();
+                            alertBox("Reset Password","Check your email to reset your password.");
                         }
                     }
                 });
+    }
+
+    private void alertBox(String title, String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(ForgotPasswordActivity.this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.fragment_alert, null);
+
+        TextView alertTitle = (TextView) dialogView.findViewById(R.id.titleAlert);
+        alertTitle.setText(title);
+
+        TextView alert = (TextView) dialogView.findViewById(R.id.txtAlert);
+        alert.setText(message);
+
+        builder.setView(dialogView);
+        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //do something with edt.getText().toString();
+                startActivity(new Intent(ForgotPasswordActivity.this, LoginActivity.class));
+                finish();
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 }
 

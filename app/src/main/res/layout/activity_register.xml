@@ -62,6 +62,15 @@
                         android:singleLine="true" />
 
                 </android.support.design.widget.TextInputLayout>
+
+                <Button
+                    android:id="@+id/register_register_button"
+                    style="?android:textAppearanceSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Submit"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <TextView
@@ -83,21 +92,11 @@
                 android:gravity="center">
 
                 <Button
-                    android:id="@+id/register_register_button"
-                    style="?android:textAppearanceSmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="8dp"
-                    android:text="Register"
-                    android:textStyle="bold" />
-
-                <Button
                     android:id="@+id/register_sign_in_button"
                     style="?android:textAppearanceSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:text="Sign In"
+                    android:text="Already registered? Sign in here."
                     android:textStyle="bold" />
             </LinearLayout>
 
