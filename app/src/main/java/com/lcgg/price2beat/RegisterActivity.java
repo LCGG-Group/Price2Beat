@@ -121,6 +121,14 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
                         }
                     }
                     else{
+                        refUser = database.getReference("User").child(auth.getUid());
+                        refPoints = database.getReference("Points").child(auth.getUid());
+                        refWallet = database.getReference("Wallet").child(auth.getUid());
+
+                        refUser.addListenerForSingleValueEvent(valueEventListenerUser);
+                        refPoints.addListenerForSingleValueEvent(valueEventListenerPoints);
+                        refWallet.addListenerForSingleValueEvent(valueEventListenerWallet);
+
                         alertBox("Register","Register Success");
                     }
                 }
@@ -147,15 +155,6 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-
-                                refUser = database.getReference("User").child(auth.getUid());
-                                refPoints = database.getReference("Points").child(auth.getUid());
-                                refWallet = database.getReference("Wallet").child(auth.getUid());
-
-                                refUser.addListenerForSingleValueEvent(valueEventListenerUser);
-                                refPoints.addListenerForSingleValueEvent(valueEventListenerPoints);
-                                refWallet.addListenerForSingleValueEvent(valueEventListenerWallet);
-
                                 startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                                 finish();
                             }
@@ -171,6 +170,7 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+            refUser.child("userId").setValue(auth.getUid());
             refUser.child("displayName").setValue(inputEmail.getText().toString());
             refUser.child("email").setValue(inputEmail.getText().toString());
         }
@@ -183,6 +183,7 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+            refPoints.child("pointsId").setValue(auth.getUid());
             refPoints.child("earned").setValue(0);
         }
         @Override
@@ -194,6 +195,7 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+            refWallet.child("walletId").setValue(auth.getUid());
             refWallet.child("amount").setValue(0);
         }
         @Override
