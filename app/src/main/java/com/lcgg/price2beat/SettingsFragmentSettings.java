@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,6 +68,7 @@ public class SettingsFragmentSettings extends Fragment {
     TextView editAmount;
     EditText editAmountPay, editUserId;
     Button btnAmountPay, btnTransfer;
+    ImageView qrImage;
 
     Wallet wallet;
     User user;
@@ -135,9 +137,12 @@ public class SettingsFragmentSettings extends Fragment {
         final View dialogView = inflater.inflate(R.layout.fragment_transfer_amount, null);
         builder.setView(dialogView);
 
+        qrImage = (ImageView) dialogView.findViewById(R.id.transferQRCode);
+
         editAmountPay = (EditText) dialogView.findViewById(R.id.editAmount);
         editUserId = (EditText) dialogView.findViewById(R.id.editUserId);
-        editUserId.setOnTouchListener(userListener);
+
+        qrImage.setOnTouchListener(qrImageListener);
 
         builder.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
@@ -203,13 +208,15 @@ public class SettingsFragmentSettings extends Fragment {
         }
     };
 
-    private View.OnTouchListener userListener = new View.OnTouchListener() {
+
+    private View.OnTouchListener qrImageListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             processUser();
             return true;
         }
     };
+
     private void processUser() {
         qrScan.initiateScan();
 

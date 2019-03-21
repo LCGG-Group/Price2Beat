@@ -117,8 +117,8 @@
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
                                       <entry key="iconShape" value="NONE" />
-                                      <entry key="imageAsset" value="C:\Users\len.carlo.g.gonzales\Desktop\linkedin_banner_image_2.png" />
-                                      <entry key="outputName" value="ic_launcher_logo_2" />
+                                      <entry key="imageAsset" value="C:\Users\len.carlo.g.gonzales\Desktop\QR Code.png" />
+                                      <entry key="outputName" value="ic_launcher_qr_code" />
                                     </map>
                                   </option>
                                 </PersistentState>

@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,6 +61,7 @@ public class StoreFragment extends Fragment {
     FirebaseDatabase database;
     DatabaseReference refPoints, refTransfer, refStore;
 
+    ImageView qrImage;
     EditText editPayUser, editPay;
     Button btnPayAmount;
 
@@ -90,7 +92,9 @@ public class StoreFragment extends Fragment {
         btnPayAmount = (Button) view.findViewById(R.id.btnPayAmount);
 
         btnPayAmount.setOnClickListener(payAmountListener);
-        editPayUser.setOnTouchListener(payUserListener);
+
+        qrImage = (ImageView) view.findViewById(R.id.storeQRCode);
+        qrImage.setOnTouchListener(qrImageListener);
 
         FirebaseUser firebaseUser = auth.getCurrentUser();
         database = FirebaseDatabase.getInstance();
@@ -102,13 +106,16 @@ public class StoreFragment extends Fragment {
         return view;
     }
 
-    private View.OnTouchListener payUserListener = new View.OnTouchListener() {
+
+    private View.OnTouchListener qrImageListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             processUser();
             return true;
         }
     };
+
+
     private View.OnClickListener payAmountListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {

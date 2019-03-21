@@ -9,6 +9,23 @@
     <!-- TODO: Update blank fragment layout -->
 
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="35dp"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/storeQRCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="false"
+            android:minWidth="150dp"
+            android:minHeight="150dp"
+            android:src="@mipmap/ic_launcher_qr_code" />
+    </LinearLayout>
+
+
     <EditText
         android:id="@+id/editPayUser"
         android:layout_width="match_parent"
@@ -17,6 +34,7 @@
         android:layout_marginStart="25dp"
         android:layout_marginEnd="25dp"
         android:hint="Pay to"
+        android:editable="false"
         android:inputType="none" />
 
     <EditText
