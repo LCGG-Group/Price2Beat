@@ -16,20 +16,50 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18dp"
-            android:text="Remaining Amount: "
-            android:layout_margin="15dp"
+            android:text="Remaining Balance: "
+            android:layout_margin="25dp"
             android:textStyle="bold"
             android:id="@+id/txtPoints"/>
+    </LinearLayout>
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="35dp">
+
+        <ImageView
+            android:id="@+id/storeQRCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="false"
+            android:minWidth="250dp"
+            android:minHeight="250dp"
+            android:src="@mipmap/ic_launcher_wallet" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:textSize="18dp"
+            android:gravity="center"
+            android:layout_marginTop="50dp"
+            android:layout_marginRight="20dp"
+            android:layout_alignLeft="@+id/storeQRCode"
+            android:layout_alignTop="@+id/storeQRCode"
+            android:layout_alignRight="@+id/storeQRCode"
+            android:layout_alignBottom="@+id/storeQRCode"
+            android:text="0.00"
+            android:textSize="25dp"
             android:textStyle="bold"
             android:id="@+id/amount"/>
-        
-    </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>
+
 
 
     <LinearLayout
