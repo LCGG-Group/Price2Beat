@@ -209,13 +209,13 @@ public class SettingsFragmentSettings extends Fragment {
     };
 
 
-    private View.OnTouchListener qrImageListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            processUser();
-            return true;
-        }
-    };
+        private View.OnTouchListener qrImageListener = new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                processUser();
+                return true;
+            }
+        };
 
     private void processUser() {
         qrScan.initiateScan();
