@@ -102,7 +102,8 @@ public class SettingsFragmentProfile extends Fragment {
                 // Got the download URL for 'users/me/profile.png'
                 Picasso.get()
                         .load(uri.toString())
-                        .resize(50,50)
+                        .resize(150,150)
+                        .centerInside()
                         .into(imageFirebase);
             }
         }).addOnFailureListener(new OnFailureListener() {
