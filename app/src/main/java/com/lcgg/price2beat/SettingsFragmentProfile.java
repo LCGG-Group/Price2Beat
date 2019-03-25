@@ -96,24 +96,27 @@ public class SettingsFragmentProfile extends Fragment {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
 
-        storageRef.child(auth.getUid().toString() + "/profile/profilepic.png").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        storageRef.child(auth.getUid()).child("profile").child("profilepic.png").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 // Got the download URL for 'users/me/profile.png'
-                Picasso.get()
-                        .load(uri.toString())
-                        .resize(150,150)
-                        .centerInside()
-                        .into(imageFirebase);
+
+               if(uri.toString() != null){
+
+                   Picasso.get()
+                           .load(uri.toString())
+                           .resize(150,150)
+                           .centerInside()
+                           .into(imageFirebase);
+               }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle any errors
+                imageFirebase.setImageResource(R.drawable.ic_person_black_24dp);
             }
         });
-
-
 
         updateLinear = (LinearLayout) view.findViewById(R.id.updateLinear);
         displayLinear = (LinearLayout) view.findViewById(R.id.displayLinear);
