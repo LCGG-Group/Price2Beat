@@ -8,11 +8,30 @@
 
     <!-- TODO: Update blank fragment layout -->
 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="35dp"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/imageFirebase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="false"
+            android:minWidth="150dp"
+            android:minHeight="150dp"
+            android:src="@drawable/ic_person_black_24dp" />
+    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/displayLinear"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="25dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginBottom="25dp"
         android:orientation="vertical">
 
         <LinearLayout

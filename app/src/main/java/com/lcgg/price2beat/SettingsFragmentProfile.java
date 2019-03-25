@@ -2,6 +2,7 @@ package com.lcgg.price2beat;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -24,6 +26,8 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.internal.WebDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -38,10 +42,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
+import com.squareup.picasso.Picasso;
 
 import java.security.AuthProvider;
 import java.util.List;
@@ -58,6 +65,7 @@ public class SettingsFragmentProfile extends Fragment {
 
     TextView editName, editEmail, editPoints;
     EditText updateFirst, updateMiddle, updateLast;
+    ImageView imageFirebase;
 
     LinearLayout displayLinear, updateLinear;
 
@@ -81,6 +89,30 @@ public class SettingsFragmentProfile extends Fragment {
                              Bundle savedInstanceState) {
 
         final View view = inflater.inflate(R.layout.fragment_settings_profile, container, false);
+
+        imageFirebase = (ImageView) view.findViewById(R.id.imageFirebase);
+        imageFirebase.setOnClickListener(profileImageListener);
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+
+        storageRef.child(auth.getUid().toString() + "/profile/profilepic.png").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                // Got the download URL for 'users/me/profile.png'
+                Picasso.get()
+                        .load(uri.toString())
+                        .resize(50,50)
+                        .into(imageFirebase);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+            }
+        });
+
+
 
         updateLinear = (LinearLayout) view.findViewById(R.id.updateLinear);
         displayLinear = (LinearLayout) view.findViewById(R.id.displayLinear);
@@ -133,6 +165,13 @@ public class SettingsFragmentProfile extends Fragment {
 
         return view;
     }
+
+    private View.OnClickListener profileImageListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Toast.makeText(getContext(), "Sample", Toast.LENGTH_SHORT).show();
+        }
+    };
 
     private View.OnClickListener updateListener = new View.OnClickListener() {
         @Override
