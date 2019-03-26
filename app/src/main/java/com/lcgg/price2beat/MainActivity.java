@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                     fragment = new StoreFragment();
                     break;
                 case R.id.navigation_notifications:
-                    getSupportActionBar().setTitle("Notification");
+                    getSupportActionBar().setTitle("Market");
                     fragment = new NotificationFragment();
                     break;
                 case R.id.navigation_settings:
