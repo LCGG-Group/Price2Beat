@@ -1,5 +1,7 @@
 package com.lcgg.price2beat;
 
+import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -8,12 +10,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,6 +29,7 @@ import android.widget.ToggleButton;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.internal.WebDialog;
+import com.google.android.gms.common.api.ResultTransform;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -43,7 +48,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -54,24 +61,33 @@ import java.security.AuthProvider;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.transform.Result;
+
 public class SettingsFragmentProfile extends Fragment {
 
     private FirebaseAuth auth;
+    private static final int PICK_IMAGE_REQUEST = 1;
     FirebaseAuth.AuthStateListener mAuthListener;
     FirebaseUser firebaseUser;
 
     FirebaseDatabase database;
     DatabaseReference refUser, refPoints;
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+    StorageReference storageRef = storage.getReference();
 
     TextView editName, editEmail, editPoints;
     EditText updateFirst, updateMiddle, updateLast;
     ImageView imageFirebase;
+
+    String eText;
 
     LinearLayout displayLinear, updateLinear;
 
     Button btnUpdate, btnEdit, btnCancel;
     User user;
     AccessToken accessToken;
+
+    private  Uri mImageUri;
 
     public SettingsFragmentProfile() {
         // Required empty public constructor
@@ -93,27 +109,22 @@ public class SettingsFragmentProfile extends Fragment {
         imageFirebase = (ImageView) view.findViewById(R.id.imageFirebase);
         imageFirebase.setOnClickListener(profileImageListener);
 
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-
-        storageRef.child(auth.getUid()).child("profile").child("profilepic.png").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        storageRef.child(auth.getUid() + "/profile/profilepic.jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 // Got the download URL for 'users/me/profile.png'
+                if(uri != null){
 
-               if(uri.toString() != null){
-
-                   Picasso.get()
-                           .load(uri.toString())
-                           .resize(150,150)
-                           .centerInside()
-                           .into(imageFirebase);
-               }
+                    Picasso.get()
+                            .load(uri)
+                            .resize(150,150)
+                            .centerInside()
+                            .into(imageFirebase);
+                }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
+            public void onFailure(@NonNull Exception e) {
                 imageFirebase.setImageResource(R.drawable.ic_person_black_24dp);
             }
         });
@@ -173,9 +184,64 @@ public class SettingsFragmentProfile extends Fragment {
     private View.OnClickListener profileImageListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Toast.makeText(getContext(), "Sample", Toast.LENGTH_SHORT).show();
+            openFileChooser();
         }
     };
+
+    private void alertBox(String title, String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.fragment_alert, null);
+
+        TextView alerTitle = (TextView) dialogView.findViewById(R.id.titleAlert);
+        alerTitle.setText(title);
+
+        TextView alert = (TextView) dialogView.findViewById(R.id.txtAlert);
+        alert.setText(message);
+
+        builder.setView(dialogView);
+        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //do something with edt.getText().toString();
+                uploadFile();
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void openFileChooser() {
+        Intent intent =  new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    private String getFileExtension (Uri uri) {
+        ContentResolver cr = getActivity().getContentResolver();
+        MimeTypeMap mine = MimeTypeMap.getSingleton();
+        return  mine.getExtensionFromMimeType(cr.getType(uri));
+    }
+    private void uploadFile(){
+        //storageRef.child(auth.getUid()).child("profile")
+        if(mImageUri != null){
+            //final StorageReference fileReference = storageRef.child(auth.getUid() + "/profile/profilepic" + "." + getFileExtension(mImageUri));
+            final StorageReference fileReference = storageRef.child(auth.getUid() + "/profile/profilepic.jpg");
+
+            fileReference.putFile(mImageUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                    }
+                });
+        }
+        else{
+            Toast.makeText(getContext(), "No Image Selected", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     private View.OnClickListener updateListener = new View.OnClickListener() {
         @Override
@@ -256,4 +322,21 @@ public class SettingsFragmentProfile extends Fragment {
         }
     };
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == PICK_IMAGE_REQUEST
+                && data != null && data.getData() != null){
+            mImageUri = data.getData();
+
+            Picasso.get()
+                    .load(mImageUri)
+                    .resize(150,150)
+                    .centerInside()
+                    .into(imageFirebase);
+
+            alertBox("Profile Picture","Successfully change");
+        }
+    }
 }
