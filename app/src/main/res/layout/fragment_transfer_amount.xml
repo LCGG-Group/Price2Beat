@@ -54,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Account Name"
-            android:clickable="false"
+            android:enabled="false"
             android:inputType="none" />
         <EditText
             android:layout_width="match_parent"
