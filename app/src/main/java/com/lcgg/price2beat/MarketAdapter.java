@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,6 +34,13 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
 {
     private Context mContext;
     private ArrayList<Market> markets;
+    private Wallet wallet;
+
+    String p;
+
+    FirebaseAuth auth;
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference refWallet;
 
     public MarketAdapter(Context mContext, ArrayList<Market> markets) {
         this.mContext = mContext;
@@ -52,7 +60,6 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
             thumbnail = (ImageView) view.findViewById(R.id.marketThumbnail);
             relativeLayout = (RelativeLayout) view.findViewById(R.id.relative);
             btnPay = (Button) view.findViewById(R.id.idPay);
-
         }
     }
 
@@ -60,6 +67,8 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.market_item, parent, false);
+        auth = FirebaseAuth.getInstance();
+        refWallet = database.getReference("Wallet").child(auth.getUid());
 
         return new MyViewHolder(itemView);
     }
@@ -67,6 +76,7 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final Market m = markets.get(position);
+        viewWallet();
 
         holder.title.setText(m.getName());
         holder.price.setText(m.getPrice().toString());
@@ -75,12 +85,15 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
         holder.btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                alertBox(m.getName(), m.getPrice().toString());
+                alertBox(m.getName(), m.getPrice().toString(), wallet.getAmount().toString());
             }
         });
     }
 
-    private void alertBox(String item, String price){
+    private void alertBox(String item, String price, String wallet){
+
+        p = price;
+
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         final View dialogView = LayoutInflater.from(mContext)
                                     .inflate(R.layout.fragment_pay_amount, null);
@@ -91,10 +104,20 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
         TextView alert = (TextView) dialogView.findViewById(R.id.payAmount);
         alert.setText(price);
 
+        TextView alertWallet = (TextView) dialogView.findViewById(R.id.idWallet);
+        alertWallet.setText(wallet);
+
         builder.setView(dialogView);
-        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 //do something with edt.getText().toString();
+                processPay(p);
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
         });
@@ -102,6 +125,29 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
+
+    private void viewWallet() {
+        refWallet.addListenerForSingleValueEvent(valueEventListenerPay);
+    }
+    private void processPay(String price) {
+
+        if(Double.valueOf(price) > wallet.getAmount())
+            Toast.makeText(mContext, "Insufficient funds. Reload now? ", Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(mContext, "Pay", Toast.LENGTH_SHORT).show();
+        
+    }
+    private ValueEventListener valueEventListenerPay = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            wallet = dataSnapshot.getValue(Wallet.class);
+
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
 
     @Override
     public int getItemCount() {

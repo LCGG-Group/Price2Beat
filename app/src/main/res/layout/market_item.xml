@@ -50,7 +50,6 @@
                 android:paddingLeft="@dimen/album_title_padding"
                 android:paddingRight="@dimen/album_title_padding"
                 android:textSize="@dimen/songs_count" />
-
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

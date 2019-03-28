@@ -88,7 +88,6 @@ public class NotificationFragment extends Fragment {
             }
             adapter = new MarketAdapter(getContext(), markets);
             mRecyclerView.setAdapter(adapter);
-
         }
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
