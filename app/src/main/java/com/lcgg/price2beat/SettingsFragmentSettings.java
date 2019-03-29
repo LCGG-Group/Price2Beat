@@ -257,6 +257,7 @@ public class SettingsFragmentSettings extends Fragment {
 
                             Random generator = new Random();
                             String refIdStart = walletId.substring(0,4);
+
                             String refIdEnd = String.format("%04d", generator.nextInt(10000));
                             String refDate = formattedDate.split("-")[2];
 

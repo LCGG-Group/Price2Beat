@@ -2,7 +2,12 @@ package com.lcgg.price2beat;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -23,24 +29,39 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.lcgg.price2beat.Config.Config;
+import com.paypal.android.sdk.payments.PayPalConfiguration;
+import com.paypal.android.sdk.payments.PayPalPayment;
+import com.paypal.android.sdk.payments.PayPalService;
+import com.paypal.android.sdk.payments.PaymentActivity;
 import com.squareup.picasso.Picasso;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
+
 
 public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHolder>
 {
     private Context mContext;
     private ArrayList<Market> markets;
-    private Wallet wallet;
+    private Wallet wallet, walletStore;
+    private Transaction transaction;
 
-    String p;
+
+    String p, it , amount, referenceId, store, refDatePay;
+    EditText editAmountPay;
 
     FirebaseAuth auth;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference refWallet;
+    DatabaseReference refWallet, refTransactions, refPoints;
 
     public MarketAdapter(Context mContext, ArrayList<Market> markets) {
         this.mContext = mContext;
@@ -60,6 +81,7 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
             thumbnail = (ImageView) view.findViewById(R.id.marketThumbnail);
             relativeLayout = (RelativeLayout) view.findViewById(R.id.relative);
             btnPay = (Button) view.findViewById(R.id.idPay);
+
         }
     }
 
@@ -68,7 +90,9 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.market_item, parent, false);
         auth = FirebaseAuth.getInstance();
-        refWallet = database.getReference("Wallet").child(auth.getUid());
+        refWallet = database.getReference("Wallet");
+        refTransactions = database.getReference("Transactions").child(auth.getUid()).child("pay");
+        refPoints = database.getReference("Points").child(auth.getUid());
 
         return new MyViewHolder(itemView);
     }
@@ -81,17 +105,40 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
         holder.title.setText(m.getName());
         holder.price.setText(m.getPrice().toString());
         Picasso.get().load(m.getImageURL()).into(holder.thumbnail);
+        store = m.getStore();
 
         holder.btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                alertBox(m.getName(), m.getPrice().toString(), wallet.getAmount().toString());
+                alertBoxPay(m.getName(), m.getPrice().toString(), wallet.getAmount().toString());
             }
         });
     }
 
-    private void alertBox(String item, String price, String wallet){
+    private void alertBox(String title, String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        final View dialogView = LayoutInflater.from(mContext)
+                .inflate(R.layout.fragment_alert, null);
 
+        TextView alerTitle = (TextView) dialogView.findViewById(R.id.titleAlert);
+        alerTitle.setText(title);
+
+        TextView alert = (TextView) dialogView.findViewById(R.id.txtAlert);
+        alert.setText(message);
+
+        builder.setView(dialogView);
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //get fragment
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+    private void alertBoxPay(String item, String price, String wallet){
+
+        it = item;
         p = price;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -111,7 +158,7 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
         builder.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 //do something with edt.getText().toString();
-                processPay(p);
+                processPay(it, p);
 
             }
         });
@@ -127,21 +174,100 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
     }
 
     private void viewWallet() {
-        refWallet.addListenerForSingleValueEvent(valueEventListenerPay);
+        refWallet.child(auth.getUid()).addListenerForSingleValueEvent(valueEventListenerPay);
     }
-    private void processPay(String price) {
+    private void addTransaction() {
+        refTransactions.addListenerForSingleValueEvent(valueEventListenerTransaction);
+    }
+    private void processPay(String name, String price) {
+        addTransaction();
 
-        if(Double.valueOf(price) > wallet.getAmount())
-            Toast.makeText(mContext, "Insufficient funds. Reload now? ", Toast.LENGTH_SHORT).show();
-        else
-            Toast.makeText(mContext, "Pay", Toast.LENGTH_SHORT).show();
-        
+        if(Double.valueOf(price) > wallet.getAmount()){
+            alertBox("Insufficient funds", "Go to your wallet and add money.");
+        }
+        else{
+            Intent i = new Intent(mContext, MainActivity.class);
+            i.putExtra("referenceId", referenceId);
+            i.putExtra("name", name);
+            i.putExtra("price", price);
+            i.putExtra("date", refDatePay);
+            i.putExtra("payTo", store);
+            mContext.startActivity(i);
+        }
     }
     private ValueEventListener valueEventListenerPay = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             wallet = dataSnapshot.getValue(Wallet.class);
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
 
+        }
+    };
+    private ValueEventListener valueEventListenerTransaction = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+            Date c = Calendar.getInstance().getTime();
+            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+            refDatePay = df.format(c);
+
+            Random generator = new Random();
+
+            String refGenerated = String.format("%04d", generator.nextInt(10000));
+            String refDate = refDatePay.split("-")[2];
+
+            referenceId = refDate + refGenerated;
+
+            refTransactions.child(referenceId);
+            refTransactions.child(referenceId).child("refNumber").setValue(referenceId);
+            refTransactions.child(referenceId).child("date").setValue(refDatePay);
+            refTransactions.child(referenceId).child("item").setValue(it);
+            refTransactions.child(referenceId).child("amount").setValue(p);
+            refTransactions.child(referenceId).child("payTo").setValue(store);
+
+            refWallet.child(auth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    wallet = dataSnapshot.getValue(Wallet.class);
+                    //Less Payment of Wallet owner
+                    Double payment = wallet.getAmount() - Double.valueOf(p);
+                    refWallet.child(auth.getUid()).child("amount").setValue(payment);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+            refWallet.child(store).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    walletStore = dataSnapshot.getValue(Wallet.class);
+                    //Add Payment of Wallet owner
+                    Double payment = walletStore.getAmount() + Double.valueOf(p);
+                    refWallet.child(store).child("amount").setValue(payment);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+            refPoints.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Double earnedPoints = Double.valueOf(p) / 25;
+                    refPoints.child("earned").setValue(earnedPoints);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         }
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
