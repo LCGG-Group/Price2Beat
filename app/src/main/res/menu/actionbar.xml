@@ -11,6 +11,11 @@
         <menu>
 
             <item
+                android:id="@+id/action_purchases"
+                android:icon="@drawable/ic_shopping_cart_black_24dp"
+                android:title="Purchases" />
+
+            <item
                 android:id="@+id/action_profile"
                 android:icon="@drawable/ic_person_black_24dp"
                 android:title="Profile" />

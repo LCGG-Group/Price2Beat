@@ -175,6 +175,7 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
             refUser.child("userId").setValue(auth.getUid());
             refUser.child("displayName").setValue(inputEmail.getText().toString());
             refUser.child("email").setValue(inputEmail.getText().toString());
+            refUser.child("merchant").setValue(false);
         }
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
