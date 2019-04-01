@@ -37,7 +37,7 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
     FirebaseUser firebaseUser;
 
     FirebaseDatabase database;
-    DatabaseReference refUser, refPoints, refWallet;
+    DatabaseReference refUser, refPoints, refWallet, refTransactions;
 
     Button btnLogin;
     Button btnRegister;
@@ -124,10 +124,12 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
                         refUser = database.getReference("User").child(auth.getUid());
                         refPoints = database.getReference("Points").child(auth.getUid());
                         refWallet = database.getReference("Wallet").child(auth.getUid());
+                        refTransactions = database.getReference("Transactions").child(auth.getUid());
 
                         refUser.addListenerForSingleValueEvent(valueEventListenerUser);
                         refPoints.addListenerForSingleValueEvent(valueEventListenerPoints);
                         refWallet.addListenerForSingleValueEvent(valueEventListenerWallet);
+                        refTransactions.addListenerForSingleValueEvent(valueEventListenerTransactions);
 
                         alertBox("Register","Register Success");
                     }
@@ -197,6 +199,17 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
 
             refWallet.child("walletId").setValue(auth.getUid());
             refWallet.child("amount").setValue(0);
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
+    private ValueEventListener valueEventListenerTransactions = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+            refTransactions.child("transactionsId").setValue(auth.getUid());
         }
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
