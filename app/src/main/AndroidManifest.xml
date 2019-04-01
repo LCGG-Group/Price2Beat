@@ -43,6 +43,9 @@
             android:name=".ForgotPasswordActivity"
             android:label="Forgot Password" />
         <activity
+            android:name=".TransactionActivity"
+            android:label="Reference Information" />
+        <activity
             android:name=".MainActivity"
             android:label="@string/app_name">
             <meta-data

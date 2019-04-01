@@ -56,12 +56,12 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
     private Transaction transaction;
 
 
+    Store storeName;
     String p, it , amount, referenceId, store, refDatePay;
-    EditText editAmountPay;
 
     FirebaseAuth auth;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference refWallet, refTransactions, refPoints;
+    DatabaseReference refWallet, refTransactions, refPoints, refStore;
 
     public MarketAdapter(Context mContext, ArrayList<Market> markets) {
         this.mContext = mContext;
@@ -180,20 +180,12 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
         refTransactions.addListenerForSingleValueEvent(valueEventListenerTransaction);
     }
     private void processPay(String name, String price) {
-        addTransaction();
 
         if(Double.valueOf(price) > wallet.getAmount()){
             alertBox("Insufficient funds", "Go to your wallet and add money.");
         }
-        else{
-            Intent i = new Intent(mContext, MainActivity.class);
-            i.putExtra("referenceId", referenceId);
-            i.putExtra("name", name);
-            i.putExtra("price", price);
-            i.putExtra("date", refDatePay);
-            i.putExtra("payTo", store);
-            mContext.startActivity(i);
-        }
+        else
+            addTransaction();
     }
     private ValueEventListener valueEventListenerPay = new ValueEventListener() {
         @Override
@@ -218,14 +210,7 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
             String refGenerated = String.format("%04d", generator.nextInt(10000));
             String refDate = refDatePay.split("-")[2];
 
-            referenceId = refDate + refGenerated;
-
-            refTransactions.child(referenceId);
-            refTransactions.child(referenceId).child("refNumber").setValue(referenceId);
-            refTransactions.child(referenceId).child("date").setValue(refDatePay);
-            refTransactions.child(referenceId).child("item").setValue(it);
-            refTransactions.child(referenceId).child("amount").setValue(p);
-            refTransactions.child(referenceId).child("payTo").setValue(store);
+            referenceId = refDate + "-" + refGenerated;
 
             refWallet.child(auth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -268,6 +253,37 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
 
                 }
             });
+
+            refTransactions.child(referenceId);
+            refTransactions.child(referenceId).child("refNumber").setValue(referenceId);
+            refTransactions.child(referenceId).child("date").setValue(refDatePay);
+            refTransactions.child(referenceId).child("item").setValue(it);
+            refTransactions.child(referenceId).child("amount").setValue(p);
+            refTransactions.child(referenceId).child("claimed").setValue(false);
+
+            refStore = database.getReference("Store").child(store);
+            refStore.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    storeName = dataSnapshot.getValue(Store.class);
+                    refTransactions.child(referenceId).child("payTo").setValue(storeName.getName());
+
+                    Intent intent = new Intent(mContext, TransactionActivity.class);
+                    intent.putExtra("payRefId", referenceId);
+                    intent.putExtra("payName", it);
+                    intent.putExtra("payPrice", p);
+                    intent.putExtra("payDate", refDatePay);
+                    intent.putExtra("payTo",storeName.getName());
+                    mContext.startActivity(intent);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+
         }
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
