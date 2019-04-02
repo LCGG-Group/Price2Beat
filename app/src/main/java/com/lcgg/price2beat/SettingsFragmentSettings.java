@@ -255,13 +255,7 @@ public class SettingsFragmentSettings extends Fragment {
                             SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
                             String formattedDate = df.format(c);
 
-                            Random generator = new Random();
-                            String refIdStart = walletId.substring(0,4);
-
-                            String refIdEnd = String.format("%04d", generator.nextInt(10000));
-                            String refDate = formattedDate.split("-")[2];
-
-                            String refId = refIdStart + refDate + refIdEnd;
+                            String refId = database.getReference().push().getKey().replace("-","").replace("_","");
 
                             refTransactions.child("transfer").child(refId);
                             refTransactions.child("transfer").child(refId).child("refNumber").setValue(refId);

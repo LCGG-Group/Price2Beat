@@ -205,12 +205,7 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
             SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
             refDatePay = df.format(c);
 
-            Random generator = new Random();
-
-            String refGenerated = String.format("%04d", generator.nextInt(10000));
-            String refDate = refDatePay.split("-")[2];
-
-            referenceId = refDate + "-" + refGenerated;
+            referenceId = database.getReference().push().getKey().replace("-","").replace("_","");
 
             refWallet.child(auth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
