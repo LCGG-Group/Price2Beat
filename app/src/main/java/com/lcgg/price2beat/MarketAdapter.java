@@ -253,7 +253,7 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
             refTransactions.child(referenceId).child("refNumber").setValue(referenceId);
             refTransactions.child(referenceId).child("date").setValue(refDatePay);
             refTransactions.child(referenceId).child("item").setValue(it);
-            refTransactions.child(referenceId).child("amount").setValue(p);
+            refTransactions.child(referenceId).child("amount").setValue(Double.valueOf(p));
             refTransactions.child(referenceId).child("claimed").setValue(false);
 
             refStore = database.getReference("Store").child(store);
