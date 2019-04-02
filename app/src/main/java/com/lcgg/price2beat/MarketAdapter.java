@@ -262,6 +262,7 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     storeName = dataSnapshot.getValue(Store.class);
                     refTransactions.child(referenceId).child("payTo").setValue(storeName.getName());
+                    refTransactions.child(referenceId).child("imageURL").setValue(storeName.getImageUrl());
 
                     Intent intent = new Intent(mContext, TransactionActivity.class);
                     intent.putExtra("payRefId", referenceId);

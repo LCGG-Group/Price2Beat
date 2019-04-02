@@ -70,7 +70,9 @@ public class PurchasesFragment extends Fragment {
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             for(DataSnapshot ds : dataSnapshot.getChildren()){
                 purchase = ds.getValue(Purchases.class);
-                purchases.add(purchase);
+
+                if(purchase.getClaimed() == false)
+                    purchases.add(purchase);
             }
             adapter = new PurchasesAdapter(getContext(), purchases);
             mRecyclerView.setAdapter(adapter);
@@ -80,5 +82,4 @@ public class PurchasesFragment extends Fragment {
             Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
         }
     };
-
 }

@@ -7,16 +7,18 @@ public class Purchases {
     private String date;
     private String refNumber;
     private boolean claimed;
+    private String imageURL;
 
     public Purchases() {}
 
-    public Purchases(String item, String payTo, Double amount, String date, String refNumber, boolean claimed) {
+    public Purchases(String item, String payTo, Double amount, String date, String refNumber, boolean claimed, String imageURL) {
         this.item = item;
         this.payTo = payTo;
         this.amount = amount;
         this.date = date;
         this.refNumber = refNumber;
         this.claimed = claimed;
+        this.imageURL = imageURL;
     }
 
     public String getItem() {
@@ -37,6 +39,9 @@ public class Purchases {
     public boolean getClaimed() {
         return claimed;
     }
+    public String getImageURL() {
+        return imageURL;
+    }
 
     public void setItem(String item) {
         this.item = item;
@@ -55,5 +60,8 @@ public class Purchases {
     }
     public void setClaimed(boolean claimed) {
         this.claimed = claimed;
+    }
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 }

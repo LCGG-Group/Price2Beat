@@ -42,11 +42,14 @@ public class PurchasesAdapter extends RecyclerView.Adapter<PurchasesAdapter.MyVi
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView title;
+        public TextView title, amount;
+        public ImageView thumbnail;
 
         public MyViewHolder(View view) {
             super(view);
             title = (TextView) view.findViewById(R.id.purchaseItem);
+            amount = (TextView) view.findViewById(R.id.purchasePrice);
+            thumbnail = (ImageView) view.findViewById(R.id.purchaseThumbnail);
         }
     }
 
@@ -55,7 +58,6 @@ public class PurchasesAdapter extends RecyclerView.Adapter<PurchasesAdapter.MyVi
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_purchases, parent, false);
 
-
         return new MyViewHolder(itemView);
     }
 
@@ -63,9 +65,9 @@ public class PurchasesAdapter extends RecyclerView.Adapter<PurchasesAdapter.MyVi
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final Purchases p = purchases.get(position);
 
-        if(p.getClaimed() == false){
-            holder.title.setText(p.getItem());
-        }
+        holder.title.setText(p.getItem());
+        holder.amount.setText(String.valueOf(p.getAmount()));
+        Picasso.get().load(p.getImageURL()).into(holder.thumbnail);
     }
 
     @Override
