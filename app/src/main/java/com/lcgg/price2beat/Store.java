@@ -2,14 +2,14 @@ package com.lcgg.price2beat;
 
 public class Store {
     private String name;
-    private String imageUrl;
+    private String imageURL;
 
     public Store() {
     }
 
-    public Store(String name, String imageUrl) {
+    public Store(String name, String imageURL) {
         this.name = name;
-        this.imageUrl = imageUrl;
+        this.imageURL = imageURL;
     }
 
     public String getName() {
@@ -21,10 +21,10 @@ public class Store {
     }
 
     public String getImageUrl() {
-        return imageUrl;
+        return imageURL;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImageUrl(String imageURL) {
+        this.imageURL = imageURL;
     }
 }
