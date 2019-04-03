@@ -47,6 +47,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -59,13 +62,14 @@ public class StoreFragment extends Fragment {
     private IntentIntegrator qrScan;
 
     FirebaseDatabase database;
-    DatabaseReference refPoints, refTransfer, refStore;
+    DatabaseReference refPoints, refTransfer, refStore, refTransactions;
 
     ImageView qrImage;
     EditText editPayUser, editPay;
     Button btnPayAmount;
 
-    String walletId = "";
+    Store store;
+    String walletId, refDatePay, referenceId;
 
     public StoreFragment() {
         // Required empty public constructor
@@ -102,6 +106,7 @@ public class StoreFragment extends Fragment {
         refStore = database.getReference("Store");
         refPoints = database.getReference("Points").child(auth.getUid());
         refTransfer = database.getReference("Wallet");
+        refTransactions = database.getReference("Transactions").child(auth.getUid()).child("pay");
 
         return view;
     }
@@ -144,6 +149,13 @@ public class StoreFragment extends Fragment {
     private ValueEventListener valueEventListenerTransfer = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+            Date c = Calendar.getInstance().getTime();
+            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+            refDatePay = df.format(c);
+
+            referenceId = database.getReference().push().getKey().replace("-","").replace("_","");
+
             refTransfer.child(auth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -161,6 +173,49 @@ public class StoreFragment extends Fragment {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Double receivedMoney = dataSnapshot.child("amount").getValue(Double.class) + Double.valueOf(editPay.getText().toString());
                     refTransfer.child(walletId).child("amount").setValue(receivedMoney);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+            refPoints.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Double earnedPoints = Double.valueOf(editPay.getText().toString()) / 25;
+                    refPoints.child("earned").setValue(earnedPoints);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+            refTransactions.child(referenceId);
+            refTransactions.child(referenceId).child("refNumber").setValue(referenceId);
+            refTransactions.child(referenceId).child("date").setValue(refDatePay);
+            refTransactions.child(referenceId).child("amount").setValue(Double.valueOf(editPay.getText().toString()));
+            refTransactions.child(referenceId).child("claimed").setValue(true);
+
+            refStore = database.getReference("Store").child(walletId);
+            refStore.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    store = dataSnapshot.getValue(Store.class);
+                    refTransactions.child(referenceId).child("payTo").setValue(store.getName());
+                    refTransactions.child(referenceId).child("imageURL").setValue(store.getImageUrl());
+                    refTransactions.child(referenceId).child("item").setValue(store.getName());
+
+                    Intent intent = new Intent(getContext(), TransactionActivity.class);
+                    intent.putExtra("payRefId", referenceId);
+                    intent.putExtra("payName", store.getName());
+                    intent.putExtra("payPrice", editPay.getText().toString());
+                    intent.putExtra("payDate", refDatePay);
+                    intent.putExtra("payTo",store.getName());
+                    startActivity(intent);
                 }
 
                 @Override

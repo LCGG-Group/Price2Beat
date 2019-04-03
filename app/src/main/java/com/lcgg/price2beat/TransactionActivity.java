@@ -49,10 +49,11 @@ public class TransactionActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     Button btnHome;
 
+    TextView refMerchantTextView;
     EditText refIdTxt, refPriceTxt, refDateTxt, refMerchantTxt;
     LinearLayout activity_main;
 
-    String refId, refName, refPrice, refDate, refMerchant;
+    String refId, refName, refPrice, refDate, refMerchant, refMerchantView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +67,9 @@ public class TransactionActivity extends AppCompatActivity {
         refPrice = getIntent().getStringExtra("payPrice");
         refDate = getIntent().getStringExtra("payDate");
         refMerchant = getIntent().getStringExtra("payTo");
+        refMerchantView = getIntent().getStringExtra("transferTo");
 
+        refMerchantTextView = (TextView) findViewById(R.id.transMerchant);
         refIdTxt = (EditText) findViewById(R.id.transRefTxt);
         refDateTxt = (EditText) findViewById(R.id.transDateTxt);
         refMerchantTxt = (EditText) findViewById(R.id.transMerchantTxt);
@@ -76,6 +79,7 @@ public class TransactionActivity extends AppCompatActivity {
         refDateTxt.setText(refDate);
         refMerchantTxt.setText(refMerchant);
         refPriceTxt.setText(refPrice);
+        refMerchantTextView.setText(refMerchantView);
 
         btnHome = (Button) findViewById(R.id.transBtnHome);
         btnHome.setOnClickListener(new OnClickListener() {

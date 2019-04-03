@@ -61,7 +61,7 @@ public class SettingsFragmentSettings extends Fragment {
             .clientId(Config.PAYMENT_CLIENT_ID_SANDBOX);
 
     FirebaseDatabase database;
-    DatabaseReference refPoints, refWallet, refTransfer, refUser, refTransactions;
+    DatabaseReference refPoints, refWallet, refTransfer, refUser, refStore, refTransactions;
 
     private IntentIntegrator qrScan;
 
@@ -71,10 +71,10 @@ public class SettingsFragmentSettings extends Fragment {
     ImageView qrImage;
 
     Wallet wallet;
+    Store store;
     User user;
 
-    String amount = "";
-    String walletId = "";
+    String amount, walletId, refId, refDatePayTransfer, refIdAddMoney, refDateAddMoney;
 
     public SettingsFragmentSettings() {
         // Required empty public constructor
@@ -119,6 +119,7 @@ public class SettingsFragmentSettings extends Fragment {
         refWallet = database.getReference("Wallet").child(auth.getUid());
         refPoints = database.getReference("Points").child(auth.getUid());
         refTransfer = database.getReference("Wallet");
+        refStore = database.getReference("Store");
         refTransactions = database.getReference("Transactions").child(auth.getUid());
 
         refWallet.addListenerForSingleValueEvent(valueEventListenerWallet);
@@ -253,17 +254,37 @@ public class SettingsFragmentSettings extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             Date c = Calendar.getInstance().getTime();
                             SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
-                            String formattedDate = df.format(c);
+                            refDatePayTransfer = df.format(c);
 
-                            String refId = database.getReference().push().getKey().replace("-","").replace("_","");
+                            refId = database.getReference().push().getKey().replace("-","").replace("_","");
 
                             refTransactions.child("transfer").child(refId);
                             refTransactions.child("transfer").child(refId).child("refNumber").setValue(refId);
                             refTransactions.child("transfer").child(refId).child("amount").setValue(Double.valueOf(editAmountPay.getText().toString()));
-                            refTransactions.child("transfer").child(refId).child("transferTo").setValue(walletId);
-                            refTransactions.child("transfer").child(refId).child("date").setValue(formattedDate);
+                            refTransactions.child("transfer").child(refId).child("date").setValue(refDatePayTransfer);
+                            refTransactions.child("transfer").child(refId).child("claimed").setValue(true);
 
-                            alertBox("Transfer Amount","Transaction successful");
+                            refUser.child(walletId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    user = dataSnapshot.getValue(User.class);
+
+                                    refTransactions.child("transfer").child(refId).child("transferTo").setValue(user.getDisplayName());
+
+                                    Intent intent = new Intent(getContext(), TransactionActivity.class);
+                                    intent.putExtra("payRefId", refId);
+                                    intent.putExtra("payPrice", editAmountPay.getText().toString());
+                                    intent.putExtra("payDate", refDatePayTransfer);
+                                    intent.putExtra("payTo",user.getDisplayName());
+                                    intent.putExtra("transferTo","Transfer To:");
+                                    startActivity(intent);
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
                         }
 
                         @Override
@@ -333,6 +354,29 @@ public class SettingsFragmentSettings extends Fragment {
 
                 }
             });
+
+            Date c = Calendar.getInstance().getTime();
+            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+            refDateAddMoney = df.format(c);
+
+            refIdAddMoney = database.getReference().push().getKey().replace("-","").replace("_","");
+
+            refTransactions.child("reload").child(refIdAddMoney);
+            refTransactions.child("reload").child(refIdAddMoney).child("refNumber").setValue(refIdAddMoney);
+            refTransactions.child("reload").child(refIdAddMoney).child("amount").setValue(Double.valueOf(amount));
+            refTransactions.child("reload").child(refIdAddMoney).child("date").setValue(refDateAddMoney);
+            refTransactions.child("reload").child(refIdAddMoney).child("claimed").setValue(true);
+            refTransactions.child("reload").child(refIdAddMoney).child("addedFrom").setValue("PayPal");
+
+            Intent intent = new Intent(getContext(), TransactionActivity.class);
+            intent.putExtra("payRefId", refIdAddMoney);
+            intent.putExtra("payPrice", amount);
+            intent.putExtra("payDate", refIdAddMoney);
+            intent.putExtra("payTo", "PayPal");
+            intent.putExtra("transferTo","Added From:");
+            startActivity(intent);
+
+
         }
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -404,8 +448,6 @@ public class SettingsFragmentSettings extends Fragment {
                         JSONObject jsonObject = new JSONObject(paymentDetails);
 
                         refWallet.addListenerForSingleValueEvent(valueEventListenerWalletPaypal);
-
-                        alertBox("Add money", "Transaction successful");
                     }
                     catch (JSONException e){
                         e.printStackTrace();

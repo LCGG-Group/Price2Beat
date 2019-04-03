@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_purchases:
-                getSupportActionBar().setTitle("Purchases");
+                getSupportActionBar().setTitle("Unclaimed Purchases");
                 fragment = new PurchasesFragment();
                 loadFragment(fragment);
                 return true;
