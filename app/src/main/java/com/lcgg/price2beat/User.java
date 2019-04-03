@@ -7,18 +7,20 @@ public class User {
     private String middleName;
     private String lastName;
     private boolean merchant;
+    private String imageURL;
 
 
     public User() {
     }
 
-    public User(String email, String displayName, String firstName, String middleName,String lastName, boolean merchant) {
+    public User(String email, String displayName, String firstName, String middleName,String lastName, boolean merchant, String imageURL) {
         this.email = email;
         this.displayName = displayName;
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
         this.merchant = merchant;
+        this.imageURL = imageURL;
     }
 
     public String getEmail() {
@@ -61,5 +63,12 @@ public class User {
     }
     public void setMerchant(boolean merchant) {
         this.merchant = merchant;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 }

@@ -79,7 +79,7 @@ public class SettingsFragmentProfile extends Fragment {
     EditText updateFirst, updateMiddle, updateLast;
     ImageView imageFirebase;
 
-    String eText;
+    String eText, fileUrl;
 
     LinearLayout displayLinear, updateLinear;
 
@@ -225,16 +225,31 @@ public class SettingsFragmentProfile extends Fragment {
         return  mine.getExtensionFromMimeType(cr.getType(uri));
     }
     private void uploadFile(){
-        //storageRef.child(auth.getUid()).child("profile")
         if(mImageUri != null){
-            //final StorageReference fileReference = storageRef.child(auth.getUid() + "/profile/profilepic" + "." + getFileExtension(mImageUri));
             final StorageReference fileReference = storageRef.child(auth.getUid() + "/profile/profilepic.jpg");
 
             fileReference.putFile(mImageUri)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
+                        fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Uri downloadUrl = uri;
+                                fileUrl = downloadUrl.toString();
+                                refUser.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        refUser.child("imageURL").setValue(fileUrl);
+                                    }
 
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        });
                     }
                 });
         }
