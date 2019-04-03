@@ -57,8 +57,8 @@ public class SettingsFragmentSettings extends Fragment {
 
     public static final int PAYPAL_REQUEST_CODE = 7171;
     private static PayPalConfiguration config = new PayPalConfiguration()
-            .environment(PayPalConfiguration.ENVIRONMENT_SANDBOX)
-            .clientId(Config.PAYMENT_CLIENT_ID_SANDBOX);
+            .environment(PayPalConfiguration.ENVIRONMENT_PRODUCTION)
+            .clientId(Config.PAYMENT_CLIENT_ID_LIVE);
 
     FirebaseDatabase database;
     DatabaseReference refPoints, refWallet, refTransfer, refUser, refStore, refTransactions;
@@ -194,7 +194,7 @@ public class SettingsFragmentSettings extends Fragment {
     private void processPayment() {
         amount = editAmountPay.getText().toString();
 
-        PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amount)), "USD",
+        PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amount)), "PHP",
                 "Donate for Price2Beat", PayPalPayment.PAYMENT_INTENT_SALE);
 
         Intent intent = new Intent(getActivity(), PaymentActivity.class)
