@@ -195,7 +195,7 @@ public class SettingsFragmentSettings extends Fragment {
         amount = editAmountPay.getText().toString();
 
         PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amount)), "PHP",
-                "Donate for Price2Beat", PayPalPayment.PAYMENT_INTENT_SALE);
+                "Add Amount", PayPalPayment.PAYMENT_INTENT_SALE);
 
         Intent intent = new Intent(getActivity(), PaymentActivity.class)
                 .putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config)
