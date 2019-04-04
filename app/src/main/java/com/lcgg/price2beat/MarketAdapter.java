@@ -258,7 +258,8 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot ds : dataSnapshot.getChildren()){
                         market = ds.getValue(Market.class);
-                        refMarket.child(ds.getKey()).child("qty").setValue(market.getQty() - 1.0);
+                        refMarket.child(ds.getKey()).child("qty").setValue(market.getQty() - 1);
+                        break;
                     }
                 }
 
