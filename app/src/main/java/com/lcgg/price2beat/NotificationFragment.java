@@ -102,7 +102,8 @@ public class NotificationFragment extends Fragment {
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             for(DataSnapshot ds : dataSnapshot.getChildren()){
                 market = ds.getValue(Market.class);
-                markets.add(market);
+                if(market.getQty() > 0)
+                    markets.add(market);
             }
             adapter = new MarketAdapter(getContext(), markets);
             mRecyclerView.setAdapter(adapter);

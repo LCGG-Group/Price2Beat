@@ -52,6 +52,7 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
 {
     private Context mContext;
     private ArrayList<Market> markets;
+    private Market market;
     private Wallet wallet, walletStore;
     private Transaction transaction;
 
@@ -61,7 +62,7 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
 
     FirebaseAuth auth;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference refWallet, refTransactions, refPoints, refStore;
+    DatabaseReference refWallet, refTransactions, refPoints, refStore, refMarket;
 
     public MarketAdapter(Context mContext, ArrayList<Market> markets) {
         this.mContext = mContext;
@@ -69,7 +70,7 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView title, price;
+        public TextView title, price,qty;
         public ImageView thumbnail;
         public Button btnPay;
         public RelativeLayout relativeLayout;
@@ -78,6 +79,7 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
             super(view);
             title = (TextView) view.findViewById(R.id.marketTitle);
             price = (TextView) view.findViewById(R.id.marketPrice);
+            qty = (TextView) view.findViewById(R.id.marketQtyTxt);
             thumbnail = (ImageView) view.findViewById(R.id.marketThumbnail);
             relativeLayout = (RelativeLayout) view.findViewById(R.id.relative);
             btnPay = (Button) view.findViewById(R.id.idPay);
@@ -91,6 +93,7 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
                 .inflate(R.layout.market_item, parent, false);
         auth = FirebaseAuth.getInstance();
         refWallet = database.getReference("Wallet");
+        refMarket = database.getReference("Market");
         refTransactions = database.getReference("Transactions").child(auth.getUid()).child("pay");
         refPoints = database.getReference("Points").child(auth.getUid());
 
@@ -104,6 +107,7 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
 
         holder.title.setText(m.getName());
         holder.price.setText(m.getPrice().toString());
+        holder.qty.setText(m.getQty().toString());
         Picasso.get().load(m.getImageURL()).into(holder.thumbnail);
         store = m.getStore();
 
@@ -241,6 +245,21 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Double earnedPoints = Double.valueOf(p) / 25;
                     refPoints.child("earned").setValue(earnedPoints);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+            refMarket.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()){
+                        market = ds.getValue(Market.class);
+                        refMarket.child(ds.getKey()).child("qty").setValue(market.getQty() - 1.0);
+                    }
                 }
 
                 @Override

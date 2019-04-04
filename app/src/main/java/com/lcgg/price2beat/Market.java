@@ -5,14 +5,16 @@ public class Market {
     private Double price;
     private String store;
     private String imageURL;
+    private Double qty;
 
     public Market() {}
 
-    public Market(String name, Double price, String store, String imageURL) {
+    public Market(String name, Double price, String store, String imageURL, Double qty) {
         this.name = name;
         this.price = price;
         this.store = store;
         this.imageURL = imageURL;
+        this.qty = qty;
     }
 
     public String getName() {
@@ -27,6 +29,9 @@ public class Market {
     public String getImageURL() {
         return imageURL;
     }
+    public Double getQty() {
+        return qty;
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -39,5 +44,8 @@ public class Market {
     }
     public void setImageURL(String imageURL) {
         this.imageURL = imageURL;
+    }
+    public void setQty(Double qty) {
+        this.qty = qty;
     }
 }
