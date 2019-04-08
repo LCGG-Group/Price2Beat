@@ -277,11 +277,15 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
             refTransactions.child(referenceId).child("claimed").setValue(false);
 
             refStore = database.getReference("Store").child(store);
+
+            refTransactions.child(referenceId).child("payFrom").setValue(auth.getUid());
+            refTransactions.child(referenceId).child("payTo").setValue(store);
+
             refStore.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     storeName = dataSnapshot.getValue(Store.class);
-                    refTransactions.child(referenceId).child("payTo").setValue(storeName.getName());
+
                     refTransactions.child(referenceId).child("imageURL").setValue(storeName.getImageUrl());
 
                     Intent intent = new Intent(mContext, TransactionActivity.class);
@@ -290,6 +294,7 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
                     intent.putExtra("payPrice", p);
                     intent.putExtra("payDate", refDatePay);
                     intent.putExtra("payTo",storeName.getName());
+                    intent.putExtra("transferTo","Paid To:");
                     mContext.startActivity(intent);
                 }
 

@@ -264,19 +264,20 @@ public class SettingsFragmentSettings extends Fragment {
                             refTransactions.child("transfer").child(refId).child("date").setValue(refDatePayTransfer);
                             refTransactions.child("transfer").child(refId).child("claimed").setValue(true);
 
+                            refTransactions.child("transfer").child(refId).child("transferFrom").setValue(auth.getUid());
+                            refTransactions.child("transfer").child(refId).child("transferTo").setValue(walletId);
+
                             refUser.child(walletId).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     user = dataSnapshot.getValue(User.class);
-
-                                    refTransactions.child("transfer").child(refId).child("transferTo").setValue(user.getDisplayName());
 
                                     Intent intent = new Intent(getContext(), TransactionActivity.class);
                                     intent.putExtra("payRefId", refId);
                                     intent.putExtra("payPrice", editAmountPay.getText().toString());
                                     intent.putExtra("payDate", refDatePayTransfer);
                                     intent.putExtra("payTo",user.getDisplayName());
-                                    intent.putExtra("transferTo","Transfer To:");
+                                    intent.putExtra("transferTo","Transferred To:");
                                     startActivity(intent);
                                 }
 
@@ -367,6 +368,8 @@ public class SettingsFragmentSettings extends Fragment {
             refTransactions.child("reload").child(refIdAddMoney).child("date").setValue(refDateAddMoney);
             refTransactions.child("reload").child(refIdAddMoney).child("claimed").setValue(true);
             refTransactions.child("reload").child(refIdAddMoney).child("addedFrom").setValue("PayPal");
+
+            refTransactions.child("reload").child(refIdAddMoney).child("reloadFrom").setValue(auth.getUid());
 
             Intent intent = new Intent(getContext(), TransactionActivity.class);
             intent.putExtra("payRefId", refIdAddMoney);

@@ -42,7 +42,6 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
     Button btnLogin;
     Button btnRegister;
 
-    TextView txtForgot;
     EditText inputEmail;
     EditText inputPassword;
     EditText inputPassword2;
@@ -57,13 +56,11 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
         inputPassword = (EditText)findViewById(R.id.register_password);
         inputPassword2 = (EditText)findViewById(R.id.register_password2);
 
-        txtForgot = (TextView) findViewById(R.id.register_forgotpassword);
         btnLogin = (Button)findViewById(R.id.register_sign_in_button);
         btnRegister = (Button)findViewById(R.id.register_register_button);
 
         activity_register = (LinearLayout) findViewById(R.id.activity_register);
 
-        txtForgot.setOnClickListener(this);
         btnLogin.setOnClickListener(this);
         btnRegister.setOnClickListener(this);
 
@@ -77,11 +74,6 @@ public class RegisterActivity extends AppCompatActivity implements OnClickListen
     @Override
     public void onClick(View v) {
 
-        //Reset Password
-        if(v.getId() == R.id.register_forgotpassword){
-            startActivity(new Intent (RegisterActivity.this, ForgotPasswordActivity.class));
-            finish();
-        }
         //Log in
         if(v.getId() == R.id.register_sign_in_button){
             startActivity(new Intent (RegisterActivity.this, LoginActivity.class));

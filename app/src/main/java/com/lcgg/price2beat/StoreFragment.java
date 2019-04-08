@@ -200,12 +200,15 @@ public class StoreFragment extends Fragment {
             refTransactions.child(referenceId).child("amount").setValue(Double.valueOf(editPay.getText().toString()));
             refTransactions.child(referenceId).child("claimed").setValue(true);
 
+            refTransactions.child(referenceId).child("payFrom").setValue(auth.getUid());
+            refTransactions.child(referenceId).child("payTo").setValue(walletId);
+
             refStore = database.getReference("Store").child(walletId);
             refStore.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     store = dataSnapshot.getValue(Store.class);
-                    refTransactions.child(referenceId).child("payTo").setValue(store.getName());
+
                     refTransactions.child(referenceId).child("imageURL").setValue(store.getImageUrl());
                     refTransactions.child(referenceId).child("item").setValue(store.getName());
 
@@ -215,6 +218,7 @@ public class StoreFragment extends Fragment {
                     intent.putExtra("payPrice", editPay.getText().toString());
                     intent.putExtra("payDate", refDatePay);
                     intent.putExtra("payTo",store.getName());
+                    intent.putExtra("transferTo","Paid To:");
                     startActivity(intent);
                 }
 

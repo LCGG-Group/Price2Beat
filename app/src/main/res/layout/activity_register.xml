@@ -89,16 +89,6 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/register_forgotpassword"
-                style="?android:textAppearanceSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="16dp"
-                android:text="Forgot Password"
-                android:textStyle="bold" />
-
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -107,12 +97,18 @@
                 android:layout_gravity="center"
                 android:gravity="center">
 
+                <TextView
+                    android:text="Already registered?"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
                 <Button
                     android:id="@+id/register_sign_in_button"
                     style="?android:textAppearanceSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Already registered? Sign in here."
+                    android:layout_marginLeft="10dp"
+                    android:text="Sign in"
                     android:textStyle="bold" />
             </LinearLayout>
 
