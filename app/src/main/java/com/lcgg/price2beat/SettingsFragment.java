@@ -62,9 +62,10 @@ public class SettingsFragment extends Fragment {
 
         ViewPagerAdapter adapter =  new ViewPagerAdapter(getChildFragmentManager());
 
-        //adapter.AddFragment(new SettingsFragmentProfile(), "Personal");
         adapter.AddFragment(new SettingsFragmentQRCode(), "QR Code");
         adapter.AddFragment(new SettingsFragmentSettings(), "Balance");
+        //Todo: View Transactions - Coming Soon!!!
+        //adapter.AddFragment(new SettingsFragmentTransaction(), "Transactions");
 
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
