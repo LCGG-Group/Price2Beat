@@ -68,13 +68,6 @@ public class PurchasesAdapter extends RecyclerView.Adapter<PurchasesAdapter.MyVi
         database = FirebaseDatabase.getInstance();
         refTransactions = database.getReference("Transactions").child(auth.getUid()).child("pay");
 
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                alertBox("Unclaimed Purchase","This item is to be claimed");
-            }
-        });
-
         return new MyViewHolder(itemView);
     }
 
@@ -86,10 +79,19 @@ public class PurchasesAdapter extends RecyclerView.Adapter<PurchasesAdapter.MyVi
         holder.amount.setText(String.valueOf(p.getAmount()));
         Picasso.get().load(p.getImageURL()).into(holder.thumbnail);
 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertBox("Unclaimed Purchase","This item is to be claimed", p.getRefNumber());
+            }
+        });
+
         referenceId = p.getRefNumber();
     }
 
-    private void alertBox(String title, String message){
+    private void alertBox(String title, String message, String refId){
+        referenceId = refId;
+
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         final View dialogView = LayoutInflater.from(mContext)
                 .inflate(R.layout.fragment_alert, null);
