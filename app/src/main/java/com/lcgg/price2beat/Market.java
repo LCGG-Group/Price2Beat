@@ -1,6 +1,7 @@
 package com.lcgg.price2beat;
 
 public class Market {
+    private String marketId;
     private String name;
     private Double price;
     private String store;
@@ -9,7 +10,8 @@ public class Market {
 
     public Market() {}
 
-    public Market(String name, Double price, String store, String imageURL, Double qty) {
+    public Market(String marketId, String name, Double price, String store, String imageURL, Double qty) {
+        this.marketId = marketId;
         this.name = name;
         this.price = price;
         this.store = store;
@@ -17,6 +19,9 @@ public class Market {
         this.qty = qty;
     }
 
+    public String getMarketId() {
+        return marketId;
+    }
     public String getName() {
         return name;
     }
@@ -33,6 +38,9 @@ public class Market {
         return qty;
     }
 
+    public void setMarketId(String marketId) {
+        this.marketId = marketId;
+    }
     public void setName(String name) {
         this.name = name;
     }

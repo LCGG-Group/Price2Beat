@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -35,6 +36,10 @@ public class PurchasesAdapter extends RecyclerView.Adapter<PurchasesAdapter.MyVi
     private ArrayList<Purchases> purchases;
 
     FirebaseAuth auth;
+    FirebaseDatabase database;
+    DatabaseReference refTransactions;
+
+    String referenceId;
 
     public PurchasesAdapter(Context mContext, ArrayList<Purchases> purchases) {
         this.mContext = mContext;
@@ -58,6 +63,18 @@ public class PurchasesAdapter extends RecyclerView.Adapter<PurchasesAdapter.MyVi
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_purchases, parent, false);
 
+        auth = FirebaseAuth.getInstance();
+
+        database = FirebaseDatabase.getInstance();
+        refTransactions = database.getReference("Transactions").child(auth.getUid()).child("pay");
+
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertBox("Unclaimed Purchase","This item is to be claimed");
+            }
+        });
+
         return new MyViewHolder(itemView);
     }
 
@@ -68,7 +85,60 @@ public class PurchasesAdapter extends RecyclerView.Adapter<PurchasesAdapter.MyVi
         holder.title.setText(p.getItem());
         holder.amount.setText(String.valueOf(p.getAmount()));
         Picasso.get().load(p.getImageURL()).into(holder.thumbnail);
+
+        referenceId = p.getRefNumber();
     }
+
+    private void alertBox(String title, String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        final View dialogView = LayoutInflater.from(mContext)
+                .inflate(R.layout.fragment_alert, null);
+
+        TextView alerTitle = (TextView) dialogView.findViewById(R.id.titleAlert);
+        alerTitle.setText(title);
+
+        TextView alert = (TextView) dialogView.findViewById(R.id.txtAlert);
+        alert.setText(message);
+
+        builder.setView(dialogView);
+        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //get fragment
+                refTransactions.addListenerForSingleValueEvent(valueEventListenerTransaction);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private ValueEventListener valueEventListenerTransaction = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+            String cTransId = database.getReference().push().getKey().replace("-","").replace("_","");
+
+            Date c = Calendar.getInstance().getTime();
+            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+            String cTransDate = df.format(c);
+
+            refTransactions.child(referenceId).child("claimed").setValue(true);
+            refTransactions.child(referenceId).child("claimedTransId").setValue(cTransId);
+            refTransactions.child(referenceId).child("claimedDate").setValue(cTransDate);
+
+            Intent i = new Intent(mContext, MainActivity.class);
+            mContext.startActivity(i);
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
 
     @Override
     public int getItemCount() {

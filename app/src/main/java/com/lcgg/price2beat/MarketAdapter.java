@@ -52,13 +52,13 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
 {
     private Context mContext;
     private ArrayList<Market> markets;
-    private Market market;
+    private Market mkt;
     private Wallet wallet, walletStore;
     private Transaction transaction;
 
 
     Store storeName;
-    String p, it , amount, referenceId, store, refDatePay;
+    String p, it , amount, mId, referenceId, store, refDatePay;
 
     FirebaseAuth auth;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -114,7 +114,7 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
         holder.btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                alertBoxPay(m.getName(), m.getPrice().toString(), wallet.getAmount().toString());
+                alertBoxPay(m.getName(), m.getPrice().toString(), m.getMarketId(), wallet.getAmount().toString());
             }
         });
     }
@@ -140,10 +140,11 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
-    private void alertBoxPay(String item, String price, String wallet){
+    private void alertBoxPay(String item, String price, String mktId, String wallet){
 
         it = item;
         p = price;
+        mId = mktId;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         final View dialogView = LayoutInflater.from(mContext)
@@ -253,14 +254,11 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
                 }
             });
 
-            refMarket.addListenerForSingleValueEvent(new ValueEventListener() {
+            refMarket.child(mId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()){
-                        market = ds.getValue(Market.class);
-                        refMarket.child(ds.getKey()).child("qty").setValue(market.getQty() - 1);
-                        break;
-                    }
+                    mkt = dataSnapshot.getValue(Market.class);
+                    refMarket.child(mId).child("qty").setValue(mkt.getQty() - 1);
                 }
 
                 @Override
@@ -303,8 +301,6 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
 
                 }
             });
-
-
         }
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
