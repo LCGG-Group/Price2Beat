@@ -118,7 +118,6 @@ public class PurchasesAdapter extends RecyclerView.Adapter<PurchasesAdapter.MyVi
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
-
     private ValueEventListener valueEventListenerTransaction = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

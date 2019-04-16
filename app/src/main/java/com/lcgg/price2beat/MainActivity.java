@@ -36,8 +36,8 @@ public class MainActivity extends AppCompatActivity {
         myToolbar.setLogo(R.mipmap.ic_launcher);
         setSupportActionBar(myToolbar);
 
-        getSupportActionBar().setTitle("Home");
-        loadFragment(new HomeFragment());
+        getSupportActionBar().setTitle("Feeds");
+        loadFragment(new FeedsFragment());
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -50,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    getSupportActionBar().setTitle("Home");
-                    fragment = new HomeFragment();
+                    getSupportActionBar().setTitle("Feeds");
+                    fragment = new FeedsFragment();
                     break;
                 case R.id.navigation_store:
                     getSupportActionBar().setTitle("Store");
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.navigation_notifications:
                     getSupportActionBar().setTitle("Market");
-                    fragment = new NotificationFragment();
+                    fragment = new MarketFragment();
                     break;
                 case R.id.navigation_settings:
                     getSupportActionBar().setTitle("Wallet");
