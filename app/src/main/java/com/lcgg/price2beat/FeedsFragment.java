@@ -44,14 +44,14 @@ public class FeedsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_notification, container, false);
+        View view = inflater.inflate(R.layout.fragment_feeds_list, container, false);
 
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         feeds = new ArrayList<Feeds>();
-        dbRef = database.getReference("Feeds");
+        dbRef = database.getReference("Feeds").child(auth.getUid());
         dbRef.addValueEventListener(feedsValueListener);
 
         return view;
