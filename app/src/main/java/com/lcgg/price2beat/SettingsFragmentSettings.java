@@ -285,8 +285,6 @@ public class SettingsFragmentSettings extends Fragment {
             addAmount();
         }
     };
-
-
         private View.OnTouchListener qrImageListener = new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -397,7 +395,6 @@ public class SettingsFragmentSettings extends Fragment {
 
         }
     };
-
     private ValueEventListener valueEventListenerWallet = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
