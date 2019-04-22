@@ -12,6 +12,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -157,8 +160,56 @@ public class SettingsFragmentSettings extends Fragment {
             }
         });
 
-        AlertDialog alertDialog = builder.create();
+        final AlertDialog alertDialog = builder.create();
         alertDialog.show();
+
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+        editUserId.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.length() > 0 && editAmountPay.getText().toString().length() > 0)
+                {
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                }
+                else {
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                }
+
+            }
+        });
+        editAmountPay.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.length()> 0 && editUserId.getText().toString().length() > 0)
+                {
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                }
+                else {
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                }
+
+            }
+        });
     }
     private View.OnClickListener transferListener = new View.OnClickListener() {
         @Override
@@ -188,8 +239,34 @@ public class SettingsFragmentSettings extends Fragment {
             }
         });
 
-        AlertDialog alertDialog = builder.create();
+        final AlertDialog alertDialog = builder.create();
         alertDialog.show();
+
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+        editAmountPay.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.length() > 0)
+                {
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                }
+                else {
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                }
+
+            }
+        });
+
     }
     private void processPayment() {
         amount = editAmountPay.getText().toString();
@@ -221,17 +298,19 @@ public class SettingsFragmentSettings extends Fragment {
     private void processUser() {
         qrScan.initiateScan();
 
-        refUser.child(walletId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                editUserId.setText(dataSnapshot.child("displayName").getValue(String.class));
-            }
+        if(walletId != null){
+            refUser.child(walletId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    editUserId.setText(dataSnapshot.child("displayName").getValue(String.class));
+                }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }
     }
     private void processTransfer() {
         refTransfer.addListenerForSingleValueEvent(valueEventListenerTransfer);
@@ -401,7 +480,6 @@ public class SettingsFragmentSettings extends Fragment {
         builder.setView(dialogView);
         builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                //do something with edt.getText().toString();
                 dialog.dismiss();
             }
         });
@@ -415,24 +493,14 @@ public class SettingsFragmentSettings extends Fragment {
 
          IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
          if (result != null) {
-             //if qrcode has nothing in it
              if (result.getContents() == null) {
                  Toast.makeText(getContext(), "Result Not Found", Toast.LENGTH_LONG).show();
              } else {
-                 //if qr contains data
                  try {
-                     //converting the data to json
                      JSONObject obj = new JSONObject(result.getContents());
-                     //setting values to textviews
                      walletId = obj.toString();
-                     Toast.makeText(getContext(), walletId, Toast.LENGTH_LONG).show();
                  } catch (JSONException e) {
                      e.printStackTrace();
-                     //if control comes here
-                     //that means the encoded format not matches
-                     //in this case you can display whatever data is available on the qrcode
-                     //to a toast
-                     Toast.makeText(getContext(), result.getContents(), Toast.LENGTH_LONG).show();
                  }
              }
          } else {

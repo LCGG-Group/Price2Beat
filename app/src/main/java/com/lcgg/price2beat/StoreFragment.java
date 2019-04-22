@@ -11,6 +11,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -95,6 +97,54 @@ public class StoreFragment extends Fragment {
 
         btnPayAmount = (Button) view.findViewById(R.id.btnPayAmount);
 
+        btnPayAmount.setEnabled(false);
+        editPayUser.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    if(s.length() > 0 && editPay.getText().toString().length() > 0)
+                    {
+                        btnPayAmount.setEnabled(true);
+                    }
+                    else {
+                        btnPayAmount.setEnabled(false);
+                    }
+
+                }
+            });
+        editPay.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    if(s.length()> 0 && editPayUser.getText().toString().length() > 0)
+                    {
+                        btnPayAmount.setEnabled(true);
+                    }
+                    else {
+                        btnPayAmount.setEnabled(false);
+                    }
+
+                }
+            });
+
         btnPayAmount.setOnClickListener(payAmountListener);
 
         qrImage = (ImageView) view.findViewById(R.id.storeQRCode);
@@ -131,17 +181,19 @@ public class StoreFragment extends Fragment {
     private void processUser() {
         qrScan.initiateScan();
 
-        refStore.child(walletId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                editPayUser.setText(dataSnapshot.child("name").getValue(String.class));
-            }
+        if(walletId != null){
+            refStore.child(walletId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    editPayUser.setText(dataSnapshot.child("name").getValue(String.class));
+                }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }
     }
     private void processPay() {
         refTransfer.addListenerForSingleValueEvent(valueEventListenerTransfer);
@@ -168,6 +220,7 @@ public class StoreFragment extends Fragment {
 
                 }
             });
+
             refTransfer.child(walletId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -239,24 +292,14 @@ public class StoreFragment extends Fragment {
 
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
-            //if qrcode has nothing in it
             if (result.getContents() == null) {
                 Toast.makeText(getContext(), "Result Not Found", Toast.LENGTH_LONG).show();
             } else {
-                //if qr contains data
                 try {
-                    //converting the data to json
                     JSONObject obj = new JSONObject(result.getContents());
-                    //setting values to textviews
                     walletId = obj.toString();
-                    Toast.makeText(getContext(), walletId, Toast.LENGTH_LONG).show();
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    //if control comes here
-                    //that means the encoded format not matches
-                    //in this case you can display whatever data is available on the qrcode
-                    //to a toast
-                    Toast.makeText(getContext(), result.getContents(), Toast.LENGTH_LONG).show();
                 }
             }
         } else {
