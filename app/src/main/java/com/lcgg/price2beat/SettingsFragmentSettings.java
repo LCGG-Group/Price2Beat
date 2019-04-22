@@ -203,11 +203,32 @@ public class SettingsFragmentSettings extends Fragment {
                 if(s.length()> 0 && editUserId.getText().toString().length() > 0)
                 {
                     alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                    refTransfer.child(auth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            wallet = dataSnapshot.getValue(Wallet.class);
+
+                            Double walletPay;
+                            walletPay = editAmountPay.getText().toString().isEmpty() ? 0 : Double.valueOf(editAmountPay.getText().toString());
+
+                            if(wallet.getAmount() < walletPay){
+                                Toast.makeText(getContext(), "Insufficient Funds", Toast.LENGTH_SHORT).show();
+                                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                            }
+                            else {
+                                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
                 }
                 else {
                     alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
                 }
-
             }
         });
     }
@@ -294,7 +315,8 @@ public class SettingsFragmentSettings extends Fragment {
         };
 
     private void processUser() {
-        qrScan.initiateScan();
+        //qrScan.initiateScan();
+        walletId = "mpd4k2hHoMQKMIbjTQdLwUutdD92";
 
         if(walletId != null){
             refUser.child(walletId).addListenerForSingleValueEvent(new ValueEventListener() {

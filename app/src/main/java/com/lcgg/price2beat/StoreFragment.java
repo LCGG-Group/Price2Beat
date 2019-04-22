@@ -71,6 +71,7 @@ public class StoreFragment extends Fragment {
     Button btnPayAmount;
 
     Store store;
+    Wallet wallet;
     String walletId, refDatePay, referenceId;
 
     public StoreFragment() {
@@ -137,11 +138,33 @@ public class StoreFragment extends Fragment {
                     if(s.length()> 0 && editPayUser.getText().toString().length() > 0)
                     {
                         btnPayAmount.setEnabled(true);
+                        refTransfer.child(auth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                wallet = dataSnapshot.getValue(Wallet.class);
+
+                                Double walletPay;
+                                walletPay = editPay.getText().toString().isEmpty() ? 0 : Double.valueOf(editPay.getText().toString());
+
+                                if(wallet.getAmount() < walletPay){
+                                    Toast.makeText(getContext(), "Insufficient Funds", Toast.LENGTH_SHORT).show();
+                                    btnPayAmount.setEnabled(false);
+                                }
+                                else {
+                                    btnPayAmount.setEnabled(true);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
                     }
                     else {
                         btnPayAmount.setEnabled(false);
                     }
-
                 }
             });
 
@@ -179,7 +202,8 @@ public class StoreFragment extends Fragment {
     };
 
     private void processUser() {
-        qrScan.initiateScan();
+        //qrScan.initiateScan();
+        walletId = "mpd4k2hHoMQKMIbjTQdLwUutdD92";
 
         if(walletId != null){
             refStore.child(walletId).addListenerForSingleValueEvent(new ValueEventListener() {

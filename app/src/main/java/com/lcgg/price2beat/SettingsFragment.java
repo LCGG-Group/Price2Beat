@@ -64,6 +64,7 @@ public class SettingsFragment extends Fragment {
 
         adapter.AddFragment(new SettingsFragmentQRCode(), "QR Code");
         adapter.AddFragment(new SettingsFragmentSettings(), "Balance");
+        //ToDo: Transaction History
         //adapter.AddFragment(new SettingsFragmentTransaction(), "Transactions");
 
         viewPager.setAdapter(adapter);
