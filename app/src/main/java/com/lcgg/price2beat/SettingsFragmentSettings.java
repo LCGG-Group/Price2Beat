@@ -157,6 +157,7 @@ public class SettingsFragmentSettings extends Fragment {
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 //pass
+                dialog.dismiss();
             }
         });
 
@@ -212,8 +213,9 @@ public class SettingsFragmentSettings extends Fragment {
                             walletPay = editAmountPay.getText().toString().isEmpty() ? 0 : Double.valueOf(editAmountPay.getText().toString());
 
                             if(wallet.getAmount() < walletPay){
-                                Toast.makeText(getContext(), "Insufficient Funds", Toast.LENGTH_SHORT).show();
                                 alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                                alertDialog.dismiss();
+                                alertBox("Insufficient Funds","Please relaod your wallet");
                             }
                             else {
                                 alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
@@ -257,6 +259,7 @@ public class SettingsFragmentSettings extends Fragment {
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 //pass
+                dialog.dismiss();
             }
         });
 

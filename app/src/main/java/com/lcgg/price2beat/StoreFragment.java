@@ -2,6 +2,7 @@ package com.lcgg.price2beat;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -11,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -147,8 +149,8 @@ public class StoreFragment extends Fragment {
                                 walletPay = editPay.getText().toString().isEmpty() ? 0 : Double.valueOf(editPay.getText().toString());
 
                                 if(wallet.getAmount() < walletPay){
-                                    Toast.makeText(getContext(), "Insufficient Funds", Toast.LENGTH_SHORT).show();
                                     btnPayAmount.setEnabled(false);
+                                    alertBox("Insufficient Funds","Please relaod your wallet");
                                 }
                                 else {
                                     btnPayAmount.setEnabled(true);
@@ -310,6 +312,28 @@ public class StoreFragment extends Fragment {
 
         }
     };
+
+    private void alertBox(String title, String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.fragment_alert, null);
+
+        TextView alerTitle = (TextView) dialogView.findViewById(R.id.titleAlert);
+        alerTitle.setText(title);
+
+        TextView alert = (TextView) dialogView.findViewById(R.id.txtAlert);
+        alert.setText(message);
+
+        builder.setView(dialogView);
+        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
