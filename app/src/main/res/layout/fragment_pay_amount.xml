@@ -10,7 +10,7 @@
     <!-- TODO: Update blank fragment layout -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="wrap_content"
         android:background="@color/colorPrimary">
 
         <TextView
@@ -30,23 +30,23 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
-        android:layout_marginBottom="25dp">
+        android:layout_marginBottom="5dp">
 
-
-        <EditText
+        <TextView
             android:id="@+id/payItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Item:"
-            android:textStyle="bold"
-            android:enabled="false"
-            android:inputType="none" />
+            android:hint="Item: "
+            android:textSize="20dp"
+            android:textStyle="bold"/>
+
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:inputType="text"
             android:hint="Amount"
+            android:textSize="20dp"
             android:textStyle="bold"
             android:enabled="false"
             android:id="@+id/payAmount"/>
@@ -59,14 +59,14 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
-        android:layout_marginBottom="25dp">
+        android:layout_marginBottom="10dp">
 
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Wallet Amount: "
-            android:textSize="15dp"
+            android:hint="Wallet Balance: "
+            android:textSize="20dp"
             android:textStyle="bold"/>
         <EditText
             android:layout_width="match_parent"
@@ -75,6 +75,7 @@
             android:layout_marginLeft="10dp"
             android:inputType="text"
             android:hint="Amount"
+            android:textSize="20dp"
             android:textStyle="bold"
             android:enabled="false"/>
 

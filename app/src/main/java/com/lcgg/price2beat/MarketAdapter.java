@@ -151,7 +151,7 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
                                     .inflate(R.layout.fragment_pay_amount, null);
 
         TextView alertTitle = (TextView) dialogView.findViewById(R.id.payItem);
-        alertTitle.setText(item);
+        alertTitle.setText(item + ":");
 
         TextView alert = (TextView) dialogView.findViewById(R.id.payAmount);
         alert.setText(price);
@@ -187,7 +187,7 @@ public class MarketAdapter extends RecyclerView.Adapter<MarketAdapter.MyViewHold
     private void processPay(String name, String price) {
 
         if(Double.valueOf(price) > wallet.getAmount()){
-            alertBox("Insufficient funds", "Go to your wallet and add money.");
+            alertBox("Insufficient Funds", "Please relaod your wallet");
         }
         else
             addTransaction();
